@@ -1,6 +1,17 @@
 @ER.Melksaz.Modules.IdentityModule.Api_HostAddress = http://localhost:5299
 
-GET {{ER.Melksaz.Modules.IdentityModule.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{ER.Melksaz.Modules.IdentityModule.Api_HostAddress}}/api/v1/users/create
+Accept: application/json 
+Content-Type: application/json
+
+{
+  "firstName": "روزبه",
+  "lastName": "حسینی",
+  "nationalCode": "0063811820",
+  "mobile": "09126431326",
+  "email": "roozbeh.hoseiny@gmail.com",
+  "username": "roozbeh",
+  "password": "Roozbeh@123456"
+}
 
 ###

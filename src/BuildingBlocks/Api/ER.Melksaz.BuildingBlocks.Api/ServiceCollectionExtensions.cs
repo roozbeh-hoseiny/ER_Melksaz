@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using ER.Melksaz.BuildingBlocks.Api;
 using ER.Melksaz.Hosting;
+using FluentValidation;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -46,6 +47,8 @@ public static class ServiceCollectionExtensions
         });
 
         services.ConfigureOptions<JsonOptionsConfigurator>();
+
+        services.AddValidatorsFromAssembly(assembly, ServiceLifetime.Transient);
 
         HostedServiceServiceInstallerHelper.InstallHostedServiceServices(
                 services,
