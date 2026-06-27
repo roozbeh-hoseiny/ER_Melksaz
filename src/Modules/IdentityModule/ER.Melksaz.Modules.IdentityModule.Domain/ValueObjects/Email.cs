@@ -156,7 +156,7 @@ public readonly partial record struct Email
         return PrimitiveResult.Success();
     }
 
-    public override string ToString() => this.Value;
+    public override string ToString() => this.Value ?? string.Empty;
 
     public static bool TryParse(string val, out Email result)
     {

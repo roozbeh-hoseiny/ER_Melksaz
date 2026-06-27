@@ -99,7 +99,7 @@ public readonly partial record struct Username
         return value;
     }
 
-    public override string ToString() => this.Value;
+    public override string ToString() => this.Value ?? string.Empty;
 
     public static bool TryParse(string val, out Username result)
     {

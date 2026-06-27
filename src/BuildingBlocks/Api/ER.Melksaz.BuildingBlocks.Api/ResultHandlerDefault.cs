@@ -40,19 +40,22 @@ public sealed class ResultHandlerDefault : IResultHandler
         };
 
         problemDetails.Extensions["traceId"] = traceId;
+        problemDetails.Extensions["isSuccess"] = result.IsSuccess;
         problemDetails.Extensions["isFailure"] = result.IsFailure;
-        problemDetails.Extensions["errors"] = result.Errors.Select(e => new
-        {
-            e.Code,
-            e.Message,
-            e.Internal
-        });
+        problemDetails.Extensions["errors"] = result.Errors
+            .Where(e => !e.Internal)
+            .Select(e => new
+            {
+                e.Code,
+                e.Message
+            });
 
         return Results.Problem(
             title: problemDetails.Title,
             detail: problemDetails.Detail,
             statusCode: problemDetails.Status,
-            instance: problemDetails.Instance
+            instance: problemDetails.Instance,
+            extensions: problemDetails.Extensions
         );
     }
     public IResult Handle<T>(PrimitiveResult<T> result) => this.Handle(result, TypedResults.Ok);
@@ -81,10 +84,10 @@ public sealed class ResultHandlerDefault : IResultHandler
         if (error.Code.Equals(DomainErrorCodes.InvalidCaptcha_ErrorCode, StringComparison.InvariantCultureIgnoreCase))
             return StatusCodes.Status412PreconditionFailed; //412
 
-        if (error.Code.Equals(DomainErrorCodes.BadRequest_ErrorCode, StringComparison.InvariantCultureIgnoreCase))
+        if (error.Code.Contains(DomainErrorCodes.BadRequest_ErrorCode, StringComparison.InvariantCultureIgnoreCase))
             return StatusCodes.Status400BadRequest; //400
 
-        if (error.Code.Equals(DomainErrorCodes.Validation_ErrorCode, StringComparison.InvariantCultureIgnoreCase))
+        if (error.Code.Contains(DomainErrorCodes.Validation_ErrorCode, StringComparison.InvariantCultureIgnoreCase))
             return StatusCodes.Status400BadRequest; //400
 
         if (error.Code.Equals(DomainErrorCodes.Concurrency_ErrorCode, StringComparison.InvariantCultureIgnoreCase))

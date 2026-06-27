@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace ER.Melksaz.BuildingBlocks.Api;
 
@@ -30,18 +31,34 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
         using var scope = this._serviceScopeFactory.CreateScope();
         var resultHandler = scope.ServiceProvider.GetRequiredService<IResultHandler>();
 
-        PrimitiveError error;
         PrimitiveResult<bool> result;
 
-        if (exception is Microsoft.AspNetCore.Http.BadHttpRequestException)
+        if (exception is BadHttpRequestException badRequestException)
         {
-            var badRequestMessage = exception.InnerException?.Message ?? "Bad request";
-            error = PrimitiveError.Create(DomainErrorCodes.BadRequest_ErrorCode, badRequestMessage);
-            result = PrimitiveResult.Failure<bool>(error);
+            if (badRequestException.InnerException is JsonException jsonException)
+            {
+                var field =
+                    jsonException.Path?
+                        .Replace("$.", string.Empty);
+
+                var error = PrimitiveError.Create(
+                    code: $"{DomainErrorCodes.BadRequest_ErrorCode}.{field}",
+                    message: jsonException.Message);
+
+                result = PrimitiveResult.Failure<bool>(error);
+            }
+            else
+            {
+                var error = PrimitiveError.Create(
+                    DomainErrorCodes.BadRequest_ErrorCode,
+                    badRequestException.Message);
+
+                result = PrimitiveResult.Failure<bool>(error);
+            }
         }
         else
         {
-            error = PrimitiveError.Create(DomainErrorCodes.UnhandledException_ErrorCode, exception.Message);
+            var error = PrimitiveError.Create(DomainErrorCodes.UnhandledException_ErrorCode, exception.Message);
             result = PrimitiveResult.InternalFailure<bool>(error);
         }
 

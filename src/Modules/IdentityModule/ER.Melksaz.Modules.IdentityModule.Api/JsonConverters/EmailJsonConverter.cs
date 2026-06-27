@@ -1,27 +1,28 @@
-﻿using ER.Melksaz.Modules.IdentityModule.Domain.ValueObjects;
+﻿using ER.Melksaz.BuildingBlocks.Api;
+using ER.Melksaz.Modules.IdentityModule.Domain.ValueObjects;
+using ER.Melksaz.PrimitiveResults;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 
 namespace ER.Melksaz.Modules.IdentityModule.Api.JsonConverters;
 
-internal sealed class EmailJsonConverter : JsonConverter<Email>
+internal sealed class EmailJsonConverter : ValueObjectJsonConverter<Email>
 {
-    public override Email Read(
-        ref Utf8JsonReader reader,
-        Type typeToConvert,
-        JsonSerializerOptions options)
-    {
-        var result = Email.Create(reader.GetString()!);
-
-        if (result.IsSuccess) return result.Value;
-
-        throw new JsonException(result.Error.Message);
-    }
-
-
     public override void Write(
         Utf8JsonWriter writer,
         Email value,
         JsonSerializerOptions options) => writer.WriteStringValue(value.Value);
+
+    protected override PrimitiveResult TryParse(string? value, out Email result)
+    {
+        var x = Email.Create(value ?? string.Empty);
+
+        if (x.IsSuccess)
+        {
+            result = x.Value;
+            return PrimitiveResult.Success();
+        }
+
+        return PrimitiveResult.Failure(x.Errors);
+    }
 }

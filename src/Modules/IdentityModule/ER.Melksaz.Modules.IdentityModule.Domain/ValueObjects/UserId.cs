@@ -13,6 +13,8 @@ public readonly record struct UserId
 
     public static UserId Create() => new UserId(IdHelper.CreateNewUlid());
 
+    public override string ToString() => this.Value ?? string.Empty;
+
     public static bool TryParse(string val, out UserId result)
     {
         result = UserId.Empty;

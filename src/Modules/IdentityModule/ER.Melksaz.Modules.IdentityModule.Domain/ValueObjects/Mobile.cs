@@ -88,4 +88,6 @@ public readonly partial record struct Mobile
         catch { }
         return false;
     }
+
+    public override string ToString() => this.Value ?? string.Empty;
 }

@@ -1,22 +1,24 @@
-﻿using ER.Melksaz.Modules.IdentityModule.Domain.ValueObjects;
+﻿using ER.Melksaz.BuildingBlocks.Api;
+using ER.Melksaz.Modules.IdentityModule.Domain.ValueObjects;
+using ER.Melksaz.PrimitiveResults;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 
 namespace ER.Melksaz.Modules.IdentityModule.Api.JsonConverters;
 
-internal sealed class NationalCodeJsonConverter : JsonConverter<NationalCode>
+internal sealed class NationalCodeJsonConverter : ValueObjectJsonConverter<NationalCode>
 {
-    public override NationalCode Read(
-        ref Utf8JsonReader reader,
-        Type typeToConvert,
-        JsonSerializerOptions options)
+    protected override PrimitiveResult TryParse(string? value, out NationalCode result)
     {
-        var result = NationalCode.Create(reader.GetString()!);
+        var x = NationalCode.Create(value ?? string.Empty);
 
-        if (result.IsSuccess) return result.Value;
+        if (x.IsSuccess)
+        {
+            result = x.Value;
+            return PrimitiveResult.Success();
+        }
 
-        throw new JsonException(result.Error.Message);
+        return PrimitiveResult.Failure(x.Errors);
     }
 
     public override void Write(

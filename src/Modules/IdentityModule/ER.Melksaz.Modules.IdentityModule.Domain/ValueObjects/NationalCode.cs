@@ -79,6 +79,8 @@ public readonly partial record struct NationalCode
         return CreateUnsafe(result);
     }
 
+    public override string ToString() => this.Value ?? string.Empty;
+
     public static bool TryParse(string val, out NationalCode result)
     {
         result = NationalCode.Empty;
