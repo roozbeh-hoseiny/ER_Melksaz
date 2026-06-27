@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Api\ER.Melksaz.BuildingBlocks.Api\ER.Melksaz.BuildingBlocks.Api.csproj" />
+    <ProjectReference Include="..\..\..\Core\Hosting\ER.Melksaz.Hosting\ER.Melksaz.Hosting.csproj" />
+    <ProjectReference Include="..\ER.Melksaz.Modules.IdentityModule.Application\ER.Melksaz.Modules.IdentityModule.Application.csproj" />
+    <ProjectReference Include="..\ER.Melksaz.Modules.IdentityModule.Infrastructure\ER.Melksaz.Modules.IdentityModule.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

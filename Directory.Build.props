@@ -1,0 +1,58 @@
+<Project>
+	<PropertyGroup>
+		<!-- Language / compiler defaults -->
+		<LangVersion>latestMajor</LangVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<AnalysisLevel>latest</AnalysisLevel>
+
+		<!-- Build behavior -->
+		<Deterministic>true</Deterministic>
+		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+		<DebugType>portable</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+
+		<!-- Runtime / globalization / resources -->
+		<InvariantGlobalization>false</InvariantGlobalization>
+		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+		<!-- Documentation / source info -->
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+		<!-- Analyzer / style -->
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+		<!-- Testing / coverage defaults -->
+		<IsTestProject Condition="$([System.String]::Copy('$(MSBuildProjectName)').Contains('.Tests'))">true</IsTestProject>
+	</PropertyGroup>
+
+	<!-- Test project defaults -->
+	<PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+		<IsPackable>false</IsPackable>
+		<CollectCoverage>false</CollectCoverage>
+		<CoverletOutputFormat>cobertura</CoverletOutputFormat>
+		<CoverletOutput>$(MSBuildProjectDirectory)\test-results\coverage\coverage</CoverletOutput>
+		<Exclude>[xunit.*]*</Exclude>
+		<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+		<ExcludeByFile>**/_Migrations/*.cs;**/Migrations/*.cs;**/*.g.cs;**/*.designer.cs</ExcludeByFile>
+		<IncludeTestAssembly>false</IncludeTestAssembly>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<CollectCoverage>true</CollectCoverage>
+		<CoverletOutputFormat>cobertura,opencover</CoverletOutputFormat>
+		<CoverletOutput>$(MSBuildProjectDirectory)\test-results\coverage\</CoverletOutput>
+		<Exclude>[xunit.*]*</Exclude>
+		<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+		<ExcludeByFile>**/_Migrations/*.cs;**/Migrations/*.cs;**/*.g.cs;**/*.designer.cs</ExcludeByFile>
+		<IncludeTestAssembly>false</IncludeTestAssembly>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+</Project>
