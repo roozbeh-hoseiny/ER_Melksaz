@@ -39,7 +39,7 @@ internal sealed class CreateUserEndpoint : IEndpoint
             });
     }
 }
-internal sealed class CreateUserHandler
+public sealed class CreateUserHandler
 {
     public static async Task<PrimitiveResult<User>> Handle(
         CreateUserCommand command,
