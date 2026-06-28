@@ -18,9 +18,11 @@
 
   <ItemGroup>
     <PackageReference Include="JasperFx.Core" />
+    <PackageReference Include="Marten" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="WolverineFx" />
     <PackageReference Include="WolverineFx.EntityFrameworkCore" />
+    <PackageReference Include="WolverineFx.Marten" />
     <PackageReference Include="WolverineFx.SqlServer" />
   </ItemGroup>
 

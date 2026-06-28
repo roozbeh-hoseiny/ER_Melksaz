@@ -3,11 +3,11 @@ using ER.Melksaz.Hosting;
 using ER.Melksaz.Modules.IdentityModule.Api;
 using JasperFx;
 using JasperFx.CodeGeneration;
+using Marten;
 using Scalar.AspNetCore;
 using Serilog;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
-using Wolverine.SqlServer;
 
 var isCodegen = args.Contains("codegen", StringComparer.OrdinalIgnoreCase);
 string wolverineDbConfig = string.Empty;
@@ -31,16 +31,17 @@ builder.Host.UseWolverine(opts =>
 {
     opts.ServiceLocationPolicy = JasperFx.CodeGeneration.Model.ServiceLocationPolicy.AlwaysAllowed;
 
-
     opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Static;
     opts.CodeGeneration.GeneratedCodeOutputPath = Path.Combine(Directory.GetCurrentDirectory(), "Internal", "Generated");
     opts.CodeGeneration.ApplicationAssembly = ApiAssemblyReference.Assembly;
 
-    opts.PersistMessagesWithSqlServer(wolverineDbConfig!);
+    //opts.PersistMessagesWithSqlServer(wolverineDbConfig!);
+    //opts.PersistMessagesWithPostgresql(wolverineDbConfig!);
 
     // If you're also using EF Core, you may want this as well
     opts.UseEntityFrameworkCoreTransactions();
 
+    // Durable inbox/outbox
     opts.Policies.UseDurableLocalQueues();
     opts.Durability.KeepAfterMessageHandling = TimeSpan.FromHours(1);
     opts.LocalQueue("q1").UseDurableInbox();
@@ -54,6 +55,17 @@ builder.Host.UseWolverine(opts =>
         x.Production.AssertAllPreGeneratedTypesExist = true;
     });
 });
+builder.Services.AddMarten(options =>
+{
+    options.Connection(wolverineDbConfig);
+
+    // Optional
+    options.DatabaseSchemaName = "app";
+
+    // Optional: auto-create schema objects
+    options.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
+})
+.UseLightweightSessions();
 /**********************************************************/
 
 
