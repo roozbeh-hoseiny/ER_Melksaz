@@ -69,6 +69,18 @@ public static class AppConfigurationHelper
             appVersion);
     }
 
+    public static void ConfigureHostedAppConfiguration(
+         HostApplicationBuilder context,
+         string dbConfigSectionName,
+         SettingVersion appVersion)
+    {
+        ConfigureAppConfiguration(
+            context.Configuration,
+            context.Configuration,
+            dbConfigSectionName,
+            appVersion);
+    }
+
     public static void ConfigureWebAppConfiguration(
         WebApplicationBuilder builder,
         string dbConfigSectionName,

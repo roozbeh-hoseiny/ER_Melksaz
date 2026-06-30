@@ -38,6 +38,10 @@
     <Project Path="Modules/IdentityModule/ER.Melksaz.Modules.IdentityModule.Domain/ER.Melksaz.Modules.IdentityModule.Domain.csproj" />
     <Project Path="Modules/IdentityModule/ER.Melksaz.Modules.IdentityModule.Infrastructure/ER.Melksaz.Modules.IdentityModule.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Wolverine/">
+    <Project Path="Wolverine/SampleConsoleApp.Shared/SampleConsoleApp.Shared.csproj" Id="0525248e-4078-48f5-8314-be48fd3b7dfd" />
+    <Project Path="Wolverine/SampleConsoleApp/SampleConsoleApp.csproj" Id="5be4f618-bb4c-42f3-a63d-d1a3c9076158" />
+  </Folder>
   <Folder Name="/tests/" />
   <Folder Name="/tests/Identity/">
     <Project Path="../tests/IdentityModule/ER.Melksaz.IdentityModule.IntegrationTests/ER.Melksaz.IdentityModule.IntegrationTests.csproj" Id="a2d88692-80f6-4f27-a4ad-f9e768155812" />

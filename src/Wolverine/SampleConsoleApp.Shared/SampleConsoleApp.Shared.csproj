@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Core\Hosting\ER.Melksaz.Hosting\ER.Melksaz.Hosting.csproj" />
+		<PackageReference Include="WolverineFx" />
+		<PackageReference Include="WolverineFx.RabbitMQ" />
+		<PackageReference Include="Ulid" />
+	</ItemGroup>
+</Project>

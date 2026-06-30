@@ -63,7 +63,7 @@ builder.Services.AddMarten(options =>
     options.DatabaseSchemaName = "app";
 
     // Optional: auto-create schema objects
-    options.AutoCreateSchemaObjects = AutoCreate.CreateOrUpdate;
+    options.AutoCreateSchemaObjects = AutoCreate.All;
 })
 .UseLightweightSessions();
 /**********************************************************/
