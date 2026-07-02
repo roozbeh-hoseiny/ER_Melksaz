@@ -1,16 +1,9 @@
-﻿using ER.Melksaz.Modules.IdentityModule.Application.Persistence;
-using ER.Melksaz.Modules.IdentityModule.Domain.Aggregates.UserAggregate;
-using ER.Melksaz.Modules.IdentityModule.Domain.ValueObjects;
-using ER.Melksaz.PrimitiveResults;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace ER.Melksaz.IdentityModule.IntegrationTests;
+﻿namespace ER.Melksaz.IdentityModule.IntegrationTests.Features.Users;
 
 [Collection("db")]
-public class UserRepositoryTests : IntegrationTestBase
+public class UserWriteUnitOfWorkTests : IntegrationTestBase
 {
-    public UserRepositoryTests(SqlServerFixture fixture)
+    public UserWriteUnitOfWorkTests(SqlServerFixture fixture)
         : base(fixture)
     {
     }
@@ -31,8 +24,7 @@ public class UserRepositoryTests : IntegrationTestBase
                 Username.CreateUnsafe("ehsan.shayan"),
                 password))
             .Map(newUser => uof.WriteRepo.AddUser(newUser).Map(() => newUser))
-            .Map(newUser => uof.SaveChangesWithResultAsync(CancellationToken.None))
-            .ConfigureAwait(false);
+            .Map(newUser => uof.SaveChangesWithResultAsync(CancellationToken.None));
 
         result.IsSuccess.Should().BeTrue();
     }

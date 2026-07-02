@@ -1,9 +1,8 @@
 ﻿using ER.Melksaz.Modules.IdentityModule.Infrastructure;
 using ER.Melksaz.ServiceInstaller;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace ER.Melksaz.IdentityModule.IntegrationTests;
+namespace ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Factories;
 
 public static class TestServiceFactory
 {
@@ -15,7 +14,16 @@ public static class TestServiceFactory
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Databases:ER_Melksaz:ConnectionString"] = fixture.ConnectionString
+                ["Databases:ER_Melksaz:ConnectionString"] = fixture.ConnectionString,
+                ["Databases:ER_Melksaz:UserId"] = fixture.UserId,
+                ["Databases:ER_Melksaz:Password"] = fixture.Password,
+
+                ["Hasher:HashKey"] = new string('*', 30),
+
+                ["Encryption:HashKey"] = new string('*', 32),
+                ["Encryption:Keys:0:Id"] = "A",
+                ["Encryption:Keys:0:KeyString"] = new string('*', 32),
+
             })
             .Build();
 

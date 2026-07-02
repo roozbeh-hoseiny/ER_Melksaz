@@ -18,7 +18,7 @@
 		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 
 		<!-- Documentation / source info -->
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 

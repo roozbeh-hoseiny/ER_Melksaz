@@ -1,4 +1,7 @@
-﻿namespace ER.Melksaz.IdentityModule.IntegrationTests;
+﻿using ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Factories;
+using ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Fixtures;
+
+namespace ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Abstractions;
 
 public abstract class IntegrationTestBase : IAsyncLifetime
 {

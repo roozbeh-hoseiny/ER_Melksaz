@@ -32,7 +32,6 @@ internal sealed class ServiceWorker : BackgroundService
         {
             started.SetResult();
         });
-
         await started.Task;
         Console.Clear();
         this._logger.LogInformation("Up and run!");
