@@ -1,11 +1,10 @@
-﻿using ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Factories;
-using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence;
+﻿using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence;
 using Microsoft.Data.SqlClient;
 using Testcontainers.MsSql;
 
-namespace ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Fixtures;
+namespace ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Containers;
 
-public sealed class SqlServerFixture : IAsyncLifetime
+public sealed class SqlServerContainer : IAsyncLifetime
 {
     private readonly MsSqlContainer _container;
     private const string DatabaseName = "ER_Melksaz_Test";
@@ -14,12 +13,12 @@ public sealed class SqlServerFixture : IAsyncLifetime
     public string UserId { get; private set; } = string.Empty;
     public string Password { get; private set; } = string.Empty;
 
-    public SqlServerFixture()
+    public SqlServerContainer()
     {
-        this._container = new MsSqlBuilder()
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithPassword("Your_strong_Password123!")
+        this._container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
+            .WithPassword("My@Strong#Password!123456!")
             .WithCleanUp(true)
+            .WithAutoRemove(true)
             .Build();
     }
 
@@ -28,12 +27,13 @@ public sealed class SqlServerFixture : IAsyncLifetime
         await this._container.StartAsync();
 
         await this.CreateDatabaseAsync();
+
         this.BuildConnectionString();
+    }
 
-        var services = TestServiceFactory.Create(this);
-
-        await IdentityMigrator.MigrateAsync(services);
-
+    public async Task Migrate(IServiceProvider servivceProvider)
+    {
+        await IdentityMigrator.MigrateAsync(servivceProvider);
     }
 
     public async Task DisposeAsync()
@@ -62,7 +62,7 @@ public sealed class SqlServerFixture : IAsyncLifetime
         var builder = new SqlConnectionStringBuilder(
             this._container.GetConnectionString())
         {
-            InitialCatalog = DatabaseName
+            InitialCatalog = DatabaseName,
         };
 
         this.ConnectionString = builder.ConnectionString;

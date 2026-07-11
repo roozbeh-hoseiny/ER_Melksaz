@@ -5,6 +5,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection InstallApiServices(
         this IServiceCollection services,
         IConfiguration configuration,
+        IHostEnvironment environment,
         Assembly assembly)
     {
         services.Configure<ApiOptions>(opts =>
@@ -53,6 +55,7 @@ public static class ServiceCollectionExtensions
         HostedServiceServiceInstallerHelper.InstallHostedServiceServices(
                 services,
                 configuration,
+                environment,
                 assembly);
 
         return services;

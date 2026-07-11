@@ -10,7 +10,39 @@ namespace ER.Melksaz.BuildingBlocks.Persistence.EFAccess.Helpers;
 public static class SqlPersistenceHelpers
 {
     private static readonly HashSet<string> RegisteredHealthCheks = [];
+    public static IServiceCollection RegisterDbContext<TDbContext>(
+        IServiceCollection services,
+        string connectionString,
+        string uniqueName,
+        DbConnectionMode mode,
+        Assembly migrationAssembly)
+        where TDbContext : DbContext
+    {
+        services
+           .AddDbContext<TDbContext>((sp, o) =>
+           {
+               o.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
 
+               o.UseSqlServer(connectionString, opts =>
+               {
+                   opts.MigrationsAssembly(migrationAssembly);
+               })
+                   .UseQueryTrackingBehavior(mode.Equals(DbConnectionMode.ReadOnly)
+                       ? QueryTrackingBehavior.NoTracking
+                       : QueryTrackingBehavior.TrackAll);
+#if DEBUG
+               o.EnableSensitiveDataLogging();
+#endif
+
+               var interceptors = sp.GetServices<IInterceptor>();
+
+               o.AddInterceptors(interceptors);
+           });
+
+        services.RegisterSqlHealthCheck(connectionString, uniqueName);
+
+        return services;
+    }
     public static IServiceCollection RegisterDbContext<TDbContext>(
         IServiceCollection services,
         IConfiguration config,
@@ -20,32 +52,16 @@ public static class SqlPersistenceHelpers
         where TDbContext : DbContext
     {
         var connectionString = PersistenceHelpers.GetConnectionstring(config, databaseSectionName, mode);
-        services
-            .AddDbContext<TDbContext>((sp, o) =>
-            {
-                o.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
-
-                o.UseSqlServer(connectionString, opts =>
-                    {
-                        opts.MigrationsAssembly(migrationAssembly);
-                    })
-                    .UseQueryTrackingBehavior(mode.Equals(DbConnectionMode.ReadOnly)
-                        ? QueryTrackingBehavior.NoTracking
-                        : QueryTrackingBehavior.TrackAll);
-#if DEBUG
-                o.EnableSensitiveDataLogging();
-#endif
-
-                var interceptors = sp.GetServices<IInterceptor>();
-
-                o.AddInterceptors(interceptors);
-            });
-
-        services.RegisterSqlHealthCheck(connectionString, databaseSectionName);
-
-        return services;
+        return RegisterDbContext<TDbContext>(
+            services,
+            connectionString,
+            databaseSectionName,
+            mode,
+            migrationAssembly);
     }
-    private static IServiceCollection RegisterSqlHealthCheck(this IServiceCollection services, string connectionString, string name)
+    private static IServiceCollection RegisterSqlHealthCheck(this IServiceCollection services,
+        string connectionString,
+        string name)
     {
         if (RegisteredHealthCheks.TryGetValue(name, out var x) && !string.IsNullOrWhiteSpace(x))
         {

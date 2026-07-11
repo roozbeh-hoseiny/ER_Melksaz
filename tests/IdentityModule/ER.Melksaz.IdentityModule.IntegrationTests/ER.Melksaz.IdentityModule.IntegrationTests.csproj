@@ -13,6 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Testcontainers" />
     <PackageReference Include="Testcontainers.MsSql" />
@@ -25,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Core\Hosting\ER.Melksaz.ServiceInstaller\ER.Melksaz.ServiceInstaller.csproj" />
+    <ProjectReference Include="..\..\..\src\Modules\IdentityModule\ER.Melksaz.Modules.IdentityModule.Api\ER.Melksaz.Modules.IdentityModule.Api.csproj" />
     <ProjectReference Include="..\..\..\src\Modules\IdentityModule\ER.Melksaz.Modules.IdentityModule.Infrastructure\ER.Melksaz.Modules.IdentityModule.Infrastructure.csproj" />
   </ItemGroup>
 

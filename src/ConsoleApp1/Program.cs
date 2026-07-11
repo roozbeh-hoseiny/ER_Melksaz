@@ -35,5 +35,6 @@ IHostBuilder CreateHostBuilder(string[] args) =>
             _ = HostedServiceServiceInstallerHelper.InstallHostedServiceServices(
                 services,
                 hostBuilderContext.Configuration,
+                hostBuilderContext.HostingEnvironment,
                 SampleApplicationAssemblyReference.Assembly);
         });

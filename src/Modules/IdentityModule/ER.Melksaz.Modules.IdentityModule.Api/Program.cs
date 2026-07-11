@@ -69,7 +69,7 @@ builder.Services.AddMarten(options =>
 /**********************************************************/
 
 
-builder.Services.InstallApiServices(builder.Configuration, ApiAssemblyReference.Assembly);
+builder.Services.InstallApiServices(builder.Configuration, builder.Environment, ApiAssemblyReference.Assembly);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

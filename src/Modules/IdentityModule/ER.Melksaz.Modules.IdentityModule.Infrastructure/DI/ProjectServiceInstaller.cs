@@ -17,15 +17,21 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
 namespace ER.Melksaz.Modules.IdentityModule.Infrastructure.DI;
 
 internal sealed class ProjectServiceInstaller : IServiceInstaller
 {
+    public const string DatabaseSectionName = "Databases:ER_Melksaz";
+
     public Assembly[]? DependantAssemblies => null;
 
-    public IServiceCollection InstallService(IServiceCollection services, IConfiguration config)
+    public IServiceCollection InstallService(
+        IServiceCollection services,
+        IConfiguration config,
+        IHostEnvironment environment)
     {
         _ = services.Configure<HasherServiceOptions>(options =>
         {
@@ -39,13 +45,13 @@ internal sealed class ProjectServiceInstaller : IServiceInstaller
         services.TryAddSingleton<IEncryptionService, DefaultEncryptionService>();
         services.TryAddSingleton<IHasherService, HasherService>();
 
-        _ = services.InstallPersistence(config, "Databases:ER_Melksaz");
+        _ = services.InstallPersistence(config, environment, DatabaseSectionName);
 
         services.TryAddScoped<IIdentityReadRepository, IdentityReadRepository>();
 
         services.Scan(scan =>
             scan
-                .FromAssemblies([InfrastructureAssemblyReference.Assembly])
+                .FromAssemblies(InfrastructureAssemblyReference.Assembly)
                 .AddClasses(classes => classes.AssignableTo<IDbUniqueErrorCreator>(), publicOnly: false)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
@@ -57,9 +63,10 @@ internal sealed class ProjectServiceInstaller : IServiceInstaller
 internal static class ProjectServiceCollectionExtension
 {
     internal static IServiceCollection InstallPersistence(
-       this IServiceCollection services,
-       IConfiguration config,
-       string databaseSectionName)
+        this IServiceCollection services,
+        IConfiguration config,
+        IHostEnvironment environment,
+        string databaseSectionName)
     {
         services.TryAddScoped<IBaseDbSession, EFDbSessionDefault<IdentityWriteDbContext>>();
 
@@ -92,19 +99,24 @@ internal static class ProjectServiceCollectionExtension
 
         _ = services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
 
-        _ = SqlPersistenceHelpers.RegisterDbContext<IdentityWriteDbContext>(
-              services,
-              config,
-              databaseSectionName,
-              DbConnectionMode.ReadWrite,
-              InfrastructureAssemblyReference.Assembly);
 
-        _ = SqlPersistenceHelpers.RegisterDbContext<IdentityReadDbContext>(
-             services,
-             config,
-             databaseSectionName,
-             DbConnectionMode.ReadOnly,
-             InfrastructureAssemblyReference.Assembly);
+        if (!environment.IsTest())
+        {
+            _ = SqlPersistenceHelpers.RegisterDbContext<IdentityWriteDbContext>(
+                  services,
+                  config,
+                  databaseSectionName,
+                  DbConnectionMode.ReadWrite,
+                  InfrastructureAssemblyReference.Assembly);
+
+            _ = SqlPersistenceHelpers.RegisterDbContext<IdentityReadDbContext>(
+                 services,
+                 config,
+                 databaseSectionName,
+                 DbConnectionMode.ReadOnly,
+                 InfrastructureAssemblyReference.Assembly);
+        }
+
 
         return services;
     }

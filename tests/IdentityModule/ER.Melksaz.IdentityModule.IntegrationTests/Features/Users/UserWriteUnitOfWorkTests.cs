@@ -3,12 +3,12 @@
 [Collection("db")]
 public class UserWriteUnitOfWorkTests : IntegrationTestBase
 {
-    public UserWriteUnitOfWorkTests(SqlServerFixture fixture)
+    public UserWriteUnitOfWorkTests(IntegrationTestFixture fixture)
         : base(fixture)
     {
     }
     [Fact]
-    public async Task should_save_user_through_repository()
+    public async Task AddUser_Should_ReturnsTrue()
     {
         // arrange
         using var scope = this.Services.CreateScope();

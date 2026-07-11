@@ -1,30 +1,13 @@
-﻿using ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Factories;
-using ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Fixtures;
+﻿namespace ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Abstractions;
 
-namespace ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Abstractions;
-
-public abstract class IntegrationTestBase : IAsyncLifetime
+public abstract class IntegrationTestBase : IClassFixture<IntegrationTestFixture>
 {
-    private readonly SqlServerFixture _fixture;
+    protected HttpClient Client { get; }
+    protected IServiceProvider Services { get; }
 
-    protected IServiceProvider Services { get; private set; } = null!;
-
-    protected IntegrationTestBase(SqlServerFixture fixture)
+    protected IntegrationTestBase(IntegrationTestFixture fixture)
     {
-        this._fixture = fixture;
-    }
-
-    public Task InitializeAsync()
-    {
-        this.Services = TestServiceFactory.Create(this._fixture);
-        return Task.CompletedTask;
-    }
-
-    public Task DisposeAsync()
-    {
-        if (this.Services is IDisposable d)
-            d.Dispose();
-
-        return Task.CompletedTask;
+        this.Client = fixture.Client;
+        this.Services = fixture.Factory.Services;
     }
 }

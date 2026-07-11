@@ -8,5 +8,5 @@ public sealed class ProjectServiceInstaller : IServiceInstaller
 {
     public Assembly[]? DependantAssemblies => [InfrastructureAssemblyReference.Assembly];
 
-    public IServiceCollection InstallService(IServiceCollection services, IConfiguration config) => services;
+    public IServiceCollection InstallService(IServiceCollection services, IConfiguration config, IHostEnvironment environment) => services;
 }

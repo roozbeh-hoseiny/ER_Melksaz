@@ -3,6 +3,6 @@
 namespace ER.Melksaz.IdentityModule.IntegrationTests.Infrastructure.Collections;
 
 [CollectionDefinition("db")]
-public sealed class DatabaseCollection : ICollectionFixture<SqlServerFixture>
+public sealed class DatabaseCollection : ICollectionFixture<IntegrationTestFixture>
 {
 }
