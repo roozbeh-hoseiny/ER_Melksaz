@@ -8,6 +8,7 @@
   <Folder Name="/src/">
     <Project Path="ConsoleApp1/ConsoleApp1.csproj" Id="162d6d5b-c8bb-470f-b849-1102340c53f5" />
     <Project Path="ER.Melksaz.DatabaseGenerator/ER.Melksaz.DatabaseGenerator.csproj" Id="2b14f865-64f1-485b-8c83-8d30480c7333" />
+    <Project Path="ProtoWeaver/ProtoWeaver.csproj" />
   </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="BuildingBlocks/Api/ER.Melksaz.BuildingBlocks.Api/ER.Melksaz.BuildingBlocks.Api.csproj" Id="55afc4bc-b674-4299-9c7b-00af47b61709" />
