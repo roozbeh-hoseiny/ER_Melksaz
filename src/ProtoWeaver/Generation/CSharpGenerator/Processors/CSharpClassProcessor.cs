@@ -1,7 +1,9 @@
-﻿using ProtoWeaver.Generation.CSharpGenerator.Annotations;
+﻿using Microsoft.CodeAnalysis.CSharp;
+using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation.CSharpGenerator.Processors;
+
 internal sealed class CSharpClassProcessor : IProtoServiceAnnotationProcessor
 {
     public int Order => 1;
@@ -11,10 +13,12 @@ internal sealed class CSharpClassProcessor : IProtoServiceAnnotationProcessor
         var annotation = new CSharpClassAnnotation()
         {
             ClassName = GetClassName(src.Package),
-            Namespace = GetNamespace(src.Package),
-            ClassDefinition = $"public static partial class {GetClassName(src.Package)}"
+            Namespace = GetNamespace(src.Package)
         };
+        annotation.AddKeyword(SyntaxKind.PublicKeyword);
+        annotation.AddKeyword(SyntaxKind.SealedKeyword);
+        src.AddAnnotation(annotation);
     }
-    static string GetClassName(string src) => $"{src.Split('.')[2]}Endpoints";
-    static string GetNamespace(string src) => $"ER.Sanjesh.Presentation.Services.{src.Split('.')[2]}.Endpoints;";
+    private static string GetClassName(string src) => $"{src.Split('.')[2]}Endpoints";
+    private static string GetNamespace(string src) => $"ER.Sanjesh.Presentation.Services.{src.Split('.')[2]}.Endpoints;";
 }

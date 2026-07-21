@@ -1,24 +1,24 @@
-﻿namespace ProtoWeaver.Generation;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace ProtoWeaver.Generation;
 
 public sealed class CSharpClassBuilder
 {
-    public string Namespace { get; private set; } = string.Empty;
-    public string ClassName { get; private set; } = string.Empty;
-    public string ClassDefenition { get; private set; } = string.Empty;
+    public CompilationUnitSyntax CompilationUnit { get; set; } = null!;
+    public BaseNamespaceDeclarationSyntax Namespace { get; set; } = null!;
+    public ClassDeclarationSyntax Class { get; set; } = null!;
+    public string ClassName { get; set; } = string.Empty;
+    public string Build()
+    {
+        var ns = this.Namespace
+                .AddMembers(this.Class);
 
-    public CSharpClassBuilder SetNamespace(string value)
-    {
-        this.Namespace = value;
-        return this;
-    }
-    public CSharpClassBuilder SetClassName(string value)
-    {
-        this.ClassName = value;
-        return this;
-    }
-    public CSharpClassBuilder SetClassDefenition(string value)
-    {
-        this.ClassDefenition = value;
-        return this;
+        var cu = this.CompilationUnit
+                .AddMembers(ns);
+
+        return cu
+           .NormalizeWhitespace()
+           .ToFullString();
     }
 }

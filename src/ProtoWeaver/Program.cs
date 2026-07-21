@@ -1,6 +1,6 @@
 ﻿using ProtoWeaver;
 using ProtoWeaver.Generation;
-using ProtoWeaver.Generation.CSharpGenerator.Annotations;
+using ProtoWeaver.Generation.CSharpGenerator.GenerationSteps;
 using ProtoWeaver.Generation.CSharpGenerator.Processors;
 
 var assemblyPath = @"C:\works\PersonalWorks\Azure_Sanjesh\Sanjesh\src\Services\SchoolServices\ER.Sanjesh.School.ProtoContract\bin\Debug\netstandard2.1\ER.Sanjesh.School.ProtoContract.dll";
@@ -26,6 +26,16 @@ List<IProtoMessageAnnotationProcessor> protoMessageAnnotationProcessors = new Li
     new ApiReplyMessageTypeProcessor()
 }.OrderBy(x => x.Order).ToList();
 
+List<IProtoServiceAnnotationProcessor> protoServiceAnnotationProcessors = new List<IProtoServiceAnnotationProcessor>()
+{
+    new CSharpClassProcessor()
+}.OrderBy(x => x.Order).ToList();
+
+List<IProtoServiceGenerationStep> protoServiceGenerationSteps = new List<IProtoServiceGenerationStep>()
+{
+    new ClassDeclarationStep()
+}.OrderBy(x => x.Order).ToList();
+
 foreach (var (_, message) in protoModel.Messages)
 {
     foreach (var annotationProcessor in protoMessageAnnotationProcessors)
@@ -33,35 +43,32 @@ foreach (var (_, message) in protoModel.Messages)
         annotationProcessor.Process(message);
     }
 }
-
-var googleMessages = protoModel.Messages
-    .Select(x => x.Value)
-    .Where(message => message.Annotations.Has<GoogleMessageType>())
-    .ToArray();
-
-
-using (System.IO.StreamWriter writer = new StreamWriter("./2.json", false, System.Text.Encoding.UTF8))
+foreach (var service in protoModel.Services)
 {
-    writer.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(protoModel, new Newtonsoft.Json.JsonSerializerSettings()
+    foreach (var annotationProcessor in protoServiceAnnotationProcessors)
     {
-        ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-    }));
-    writer.Close();
+        annotationProcessor.Process(service);
+    }
 }
-var x = 0;
-//var generator = new CSharpClassGenerator("MyNameSpace");
+foreach (var service in protoModel.Services)
+{
+    CSharpClassBuilder builder = new CSharpClassBuilder();
+    foreach (var step in protoServiceGenerationSteps)
+    {
+        step.Execute(service, builder);
+    }
+    using (System.IO.StreamWriter writer = new StreamWriter($"./{builder.ClassName}.cs", false, System.Text.Encoding.UTF8))
+    {
+        writer.WriteLine(builder.Build());
+        writer.Close();
+    }
+}
 
-//var dir = System.IO.Path.Combine(
-//            Environment.CurrentDirectory,
-//            "generatedFiles");
-//System.IO.Directory.CreateDirectory(dir);
-
-
-//foreach (var generatedFile in generator.Generate(protoModel))
+//using (System.IO.StreamWriter writer = new StreamWriter("./2.json", false, System.Text.Encoding.UTF8))
 //{
-//    System.IO.File.WriteAllText(
-//        System.IO.Path.Combine(dir, generatedFile.FileName),
-//        generatedFile.Content);
+//    writer.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(protoModel, new Newtonsoft.Json.JsonSerializerSettings()
+//    {
+//        ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+//    }));
+//    writer.Close();
 //}
-
-
