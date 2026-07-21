@@ -1,10 +1,12 @@
 ﻿using Google.Protobuf.Reflection;
 using ProtoWeaver.Generation;
+using ProtoWeaver.Generation.Contracts;
 
 namespace ProtoWeaver.Models;
+
 public sealed class ProtoModel
 {
-    public Dictionary<string, ProtoMessage> Messages { get; } = new();
+    public Dictionary<string, ProtoMessage> Messages { get; } = [];
     public List<ProtoService> Services { get; } = [];
 }
 public abstract class AnnotatableBase : IAnnotatable

@@ -1,4 +1,6 @@
-﻿namespace ProtoWeaver.Generation.CSharpGenerator.Annotations;
+﻿using ProtoWeaver.Generation.Contracts;
+
+namespace ProtoWeaver.Generation.CSharpGenerator.Annotations;
 
 public abstract class MessageTypeBase : IProtoAnnotation { }
 public sealed class ApiRequestMessageType : MessageTypeBase

@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
+using ProtoWeaver.Generation.Contracts;
 
 namespace ProtoWeaver.Generation.CSharpGenerator.Annotations;
 

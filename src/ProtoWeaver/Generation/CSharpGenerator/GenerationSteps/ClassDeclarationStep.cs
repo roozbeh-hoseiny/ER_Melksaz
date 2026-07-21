@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
@@ -8,26 +8,39 @@ internal sealed class ClassDeclarationStep : IProtoServiceGenerationStep
 {
     public int Order => 1;
 
-    public void Execute(ProtoService src, CSharpClassBuilder builder)
+    public void Execute(ProtoService src, GenerationContext context)
     {
         var classAnnotation = src.Annotations.Get<CSharpClassAnnotation>();
 
         if (classAnnotation is null) return;
 
-        builder.ClassName = classAnnotation.ClassName;
+        var builder = context.GetOrCreate(
+            DocumentKeys.Service(classAnnotation.ClassName),
+            $"{classAnnotation.ClassName}.g.cs",
+            () => new CSharpClassBuilder());
 
-        var @namespace = SyntaxFactory.FileScopedNamespaceDeclaration(
-                SyntaxFactory.ParseName(classAnnotation.Namespace));
+        if (builder is null) return;
 
-        var @class = SyntaxFactory.ClassDeclaration(classAnnotation.ClassName);
-        foreach (var keyword in classAnnotation.Keywords)
-        {
-            @class = @class.AddModifiers(
-                SyntaxFactory.Token(keyword));
-        }
-
-        builder.CompilationUnit ??= SyntaxFactory.CompilationUnit();
-        builder.Namespace = @namespace;
-        builder.Class = @class;
+        builder.SetNamespace(classAnnotation.Namespace);
+        builder.CreateClass(classAnnotation.ClassName, classAnnotation.Keywords);
     }
 }
+/*
+    // Add new Property
+    builder.UpdateClass(cls => cls.AddMembers(propertySyntax));
+
+    // Add new Methods    
+    builder.UpdateClass(cls =>cls.AddMembers(methodSyntax));
+
+    // Add New attribute
+    builder.UpdateClass(cls =>cls.AddAttributeLists(attributeList));
+    
+    // Add new interface
+    builder.UpdateClass(cls =>
+        cls.AddBaseListTypes(
+            SyntaxFactory.SimpleBaseType(
+                SyntaxFactory.ParseTypeName("IMyService"))));
+
+    // add using    
+    builder.AddUsing("Microsoft.AspNetCore.Mvc");
+*/

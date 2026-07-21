@@ -1,4 +1,5 @@
-﻿using ProtoWeaver.Generation.CSharpGenerator.Annotations;
+﻿using ProtoWeaver.Generation.Contracts;
+using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation.CSharpGenerator.Processors;

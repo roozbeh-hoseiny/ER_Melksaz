@@ -1,4 +1,6 @@
-﻿namespace ProtoWeaver.Generation;
+﻿using ProtoWeaver.Generation.Contracts;
+
+namespace ProtoWeaver.Generation;
 public sealed class AnnotationCollection
 {
     private readonly Dictionary<Type, List<IProtoAnnotation>> _annotations = new();

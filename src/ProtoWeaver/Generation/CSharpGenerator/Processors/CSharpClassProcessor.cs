@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
+using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
@@ -20,5 +21,5 @@ internal sealed class CSharpClassProcessor : IProtoServiceAnnotationProcessor
         src.AddAnnotation(annotation);
     }
     private static string GetClassName(string src) => $"{src.Split('.')[2]}Endpoints";
-    private static string GetNamespace(string src) => $"ER.Sanjesh.Presentation.Services.{src.Split('.')[2]}.Endpoints;";
+    private static string GetNamespace(string src) => $"ER.Sanjesh.Presentation.Services.{src.Split('.')[2]}.Endpoints";
 }

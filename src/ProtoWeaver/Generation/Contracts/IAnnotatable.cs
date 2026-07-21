@@ -1,4 +1,4 @@
-﻿namespace ProtoWeaver.Generation;
+﻿namespace ProtoWeaver.Generation.Contracts;
 
 public interface IAnnotatable
 {

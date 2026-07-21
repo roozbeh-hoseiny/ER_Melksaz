@@ -1,68 +1,116 @@
-﻿using ProtoWeaver;
+﻿using ER.Melksaz.ConfigProvider.SqlProvider.Persistance.ValueObjects;
+using ER.Melksaz.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using ProtoWeaver;
 using ProtoWeaver.Generation;
+using ProtoWeaver.Generation.Contracts;
+using ProtoWeaver.Generation.CSharpGenerator;
 using ProtoWeaver.Generation.CSharpGenerator.GenerationSteps;
 using ProtoWeaver.Generation.CSharpGenerator.Processors;
-
-var assemblyPath = @"C:\works\PersonalWorks\Azure_Sanjesh\Sanjesh\src\Services\SchoolServices\ER.Sanjesh.School.ProtoContract\bin\Debug\netstandard2.1\ER.Sanjesh.School.ProtoContract.dll";
-
-var loader = new AssemblyLoader();
-
-var assembly = loader.Load(assemblyPath);
-
-var rootDescriptors = AssemblyDescriptorScanner.Scan(assembly);
-
-var walker = new FileDescriptorDependencyWalker();
-
-var descriptors = walker.Collect(rootDescriptors);
-
-ProtoWeaver.Models.ProtoModel? protoModel = DescriptorReader.Read(descriptors?.ToArray() ?? []);
-
-List<IProtoMessageAnnotationProcessor> protoMessageAnnotationProcessors = new List<IProtoMessageAnnotationProcessor>()
+using Serilog;
+try
 {
-    new GoogleMessageTypeProcessor(),
-    new SharedMessageTypeProcessor(),
-    new ApiRequestMessageTypeProcessor(),
-    new ApiResponseMessageTypeProcessor(),
-    new ApiReplyMessageTypeProcessor()
-}.OrderBy(x => x.Order).ToList();
-
-List<IProtoServiceAnnotationProcessor> protoServiceAnnotationProcessors = new List<IProtoServiceAnnotationProcessor>()
-{
-    new CSharpClassProcessor()
-}.OrderBy(x => x.Order).ToList();
-
-List<IProtoServiceGenerationStep> protoServiceGenerationSteps = new List<IProtoServiceGenerationStep>()
-{
-    new ClassDeclarationStep()
-}.OrderBy(x => x.Order).ToList();
-
-foreach (var (_, message) in protoModel.Messages)
-{
-    foreach (var annotationProcessor in protoMessageAnnotationProcessors)
-    {
-        annotationProcessor.Process(message);
-    }
+    var host = CreateHostBuilder(args).Build();
+    await host.RunAsync();
 }
-foreach (var service in protoModel.Services)
+catch (Exception ex)
 {
-    foreach (var annotationProcessor in protoServiceAnnotationProcessors)
-    {
-        annotationProcessor.Process(service);
-    }
+    Console.WriteLine(ex.ToString());
 }
-foreach (var service in protoModel.Services)
+finally
 {
-    CSharpClassBuilder builder = new CSharpClassBuilder();
-    foreach (var step in protoServiceGenerationSteps)
-    {
-        step.Execute(service, builder);
-    }
-    using (System.IO.StreamWriter writer = new StreamWriter($"./{builder.ClassName}.cs", false, System.Text.Encoding.UTF8))
-    {
-        writer.WriteLine(builder.Build());
-        writer.Close();
-    }
 }
+IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .UseSerilog((context, services, logger) =>
+        {
+            logger.ConfigureAppLogging(context.Configuration, services);
+        })
+        .ConfigureAppConfiguration((hostingContext, config) =>
+        {
+            AppConfigurationHelper.ConfigureHostedAppConfiguration(hostingContext, config, "Database:SampleAppConfig", SettingVersion.Version1);
+        })
+        .ConfigureServices((hostBuilderContext, services) =>
+        {
+            _ = HostedServiceServiceInstallerHelper.InstallHostedServiceServices(
+                services,
+                hostBuilderContext.Configuration,
+                hostBuilderContext.HostingEnvironment,
+                ProtoWeaverAssemblyReference.Assembly);
+
+            //services.AddProtoWeaver(builder => {
+
+            //    builder.WithWriter<CSharpDocumentWriter>();
+
+            //    builder.AddProtoMessageAnnotationProcessor<GoogleMessageTypeProcessor>();
+            //    builder.AddProtoMessageAnnotationProcessor<SharedMessageTypeProcessor>();
+            //    builder.AddProtoMessageAnnotationProcessor<ApiRequestMessageTypeProcessor>();
+            //    builder.AddProtoMessageAnnotationProcessor<ApiResponseMessageTypeProcessor>();
+            //    builder.AddProtoMessageAnnotationProcessor<ApiReplyMessageTypeProcessor>();
+
+            //    builder.AddProtoServiceAnnotationProcessor<CSharpClassProcessor>();
+
+            //    builder.AddProtoServiceGenerationStep<ClassDeclarationStep>();
+            //});
+
+            services.AddSingleton<MessageGenerationPipeline>();
+            services.AddSingleton<ServiceGenerationPipeline>();
+            services.AddSingleton<ServiceAnnotationProcessorPipeline>();
+            services.AddSingleton<MessageAnnotationProcessorPipeline>();
+
+            services.AddSingleton<ICSharpDocumentWriter, CSharpDocumentWriter>();
+            services.AddSingleton<ProtoWeaverGenerator>();
+
+            services.AddSingleton<IProtoMessageAnnotationProcessor, GoogleMessageTypeProcessor>();
+            services.AddSingleton<IProtoMessageAnnotationProcessor, SharedMessageTypeProcessor>();
+            services.AddSingleton<IProtoMessageAnnotationProcessor, ApiRequestMessageTypeProcessor>();
+            services.AddSingleton<IProtoMessageAnnotationProcessor, ApiResponseMessageTypeProcessor>();
+            services.AddSingleton<IProtoMessageAnnotationProcessor, ApiReplyMessageTypeProcessor>();
+
+            services.AddSingleton<IProtoServiceAnnotationProcessor, CSharpClassProcessor>();
+
+            services.AddSingleton<IProtoServiceGenerationStep, ClassDeclarationStep>();
+
+            services.AddHostedService<ServiceWorker>();
+        });
+
+
+
+
+//List<IProtoMessageAnnotationProcessor> protoMessageAnnotationProcessors = new List<IProtoMessageAnnotationProcessor>()
+//{
+//    new GoogleMessageTypeProcessor(),
+//    new SharedMessageTypeProcessor(),
+//    new ApiRequestMessageTypeProcessor(),
+//    new ApiResponseMessageTypeProcessor(),
+//    new ApiReplyMessageTypeProcessor()
+//}.OrderBy(x => x.Order).ToList();
+
+//List<IProtoServiceAnnotationProcessor> protoServiceAnnotationProcessors = new List<IProtoServiceAnnotationProcessor>()
+//{
+//    new CSharpClassProcessor()
+//}.OrderBy(x => x.Order).ToList();
+
+//List<IProtoServiceGenerationStep> protoServiceGenerationSteps = new List<IProtoServiceGenerationStep>()
+//{
+//    new ClassDeclarationStep()
+//}.OrderBy(x => x.Order).ToList();
+
+//foreach (var (_, message) in protoModel.Messages)
+//{
+//    foreach (var annotationProcessor in protoMessageAnnotationProcessors)
+//    {
+//        annotationProcessor.Process(message);
+//    }
+//}
+//foreach (var service in protoModel.Services)
+//{
+//    foreach (var annotationProcessor in protoServiceAnnotationProcessors)
+//    {
+//        annotationProcessor.Process(service);
+//    }
+//}
 
 //using (System.IO.StreamWriter writer = new StreamWriter("./2.json", false, System.Text.Encoding.UTF8))
 //{
