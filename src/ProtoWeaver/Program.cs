@@ -7,7 +7,8 @@ using ProtoWeaver.Generation;
 using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator;
 using ProtoWeaver.Generation.CSharpGenerator.GenerationSteps;
-using ProtoWeaver.Generation.CSharpGenerator.Processors;
+using ProtoWeaver.Generation.CSharpGenerator.Processors.MessageAnnotationProcessors;
+using ProtoWeaver.Generation.CSharpGenerator.Processors.ServiceAnnotationProcessors;
 using Serilog;
 try
 {
@@ -69,6 +70,8 @@ IHostBuilder CreateHostBuilder(string[] args) =>
             services.AddSingleton<IProtoMessageAnnotationProcessor, ApiReplyMessageTypeProcessor>();
 
             services.AddSingleton<IProtoServiceAnnotationProcessor, CSharpClassProcessor>();
+            services.AddSingleton<IProtoServiceAnnotationProcessor, ServiceDocumentProcessor>();
+            services.AddSingleton<IProtoServiceAnnotationProcessor, ServiceNameProcessor>();
 
             services.AddSingleton<IProtoServiceGenerationStep, ClassDeclarationStep>();
 

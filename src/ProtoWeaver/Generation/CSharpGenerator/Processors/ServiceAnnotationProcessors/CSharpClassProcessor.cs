@@ -3,7 +3,7 @@ using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
-namespace ProtoWeaver.Generation.CSharpGenerator.Processors;
+namespace ProtoWeaver.Generation.CSharpGenerator.Processors.ServiceAnnotationProcessors;
 
 internal sealed class CSharpClassProcessor : IProtoServiceAnnotationProcessor
 {

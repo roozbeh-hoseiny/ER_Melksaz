@@ -1,4 +1,5 @@
-﻿using ProtoWeaver.Generation.CSharpGenerator;
+﻿using ProtoWeaver.Generation.Contracts;
+using ProtoWeaver.Generation.CSharpGenerator;
 
 namespace ProtoWeaver.Generation;
 
@@ -102,5 +103,14 @@ public sealed class GenerationContext
             document);
 
         return newBuilder;
+    }
+
+    public void AddAnnotation<T>(
+        DocumentKey key,
+        T annotation) where T : class, IProtoAnnotation
+    {
+        var document = this.Get(key);
+
+        document!.Annotations.Add(annotation);
     }
 }

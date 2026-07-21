@@ -11,15 +11,23 @@ internal sealed class ClassDeclarationStep : IProtoServiceGenerationStep
     public void Execute(ProtoService src, GenerationContext context)
     {
         var classAnnotation = src.Annotations.Get<CSharpClassAnnotation>();
+        var classOutputPath = src.Annotations.Get<CSharpDocumentAnnotation>();
 
         if (classAnnotation is null) return;
 
+        var documentKey = DocumentKeys.Service(classAnnotation.ClassName);
+
         var builder = context.GetOrCreate(
-            DocumentKeys.Service(classAnnotation.ClassName),
+            documentKey,
             $"{classAnnotation.ClassName}.g.cs",
             () => new CSharpClassBuilder());
 
         if (builder is null) return;
+
+        if (classOutputPath is not null)
+        {
+            context.AddAnnotation(documentKey, classOutputPath);
+        }
 
         builder.SetNamespace(classAnnotation.Namespace);
         builder.CreateClass(classAnnotation.ClassName, classAnnotation.Keywords);
