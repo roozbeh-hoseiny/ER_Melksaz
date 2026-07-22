@@ -68,6 +68,7 @@ public interface IMessageNameResolver
     MessageName? GetOrCreate(ProtoMessage message);
     MessageName? Get(MessageKey key);
     MessageName? Create(ProtoMessage message);
+    MessageName GetRequired(ProtoMessage message);
 
 }
 public readonly record struct MessageKey(string Package, string Fullname);
@@ -101,5 +102,12 @@ internal sealed class MessageNameResolver : IMessageNameResolver
             message.Package,
             message.FullName));
         return result ?? this.Create(message);
+    }
+
+    public MessageName GetRequired(ProtoMessage message)
+    {
+        return this.GetOrCreate(message)
+            ?? throw new InvalidOperationException(
+                $"No C# type mapping has been registered for proto message '{message.FullName}'.");
     }
 }

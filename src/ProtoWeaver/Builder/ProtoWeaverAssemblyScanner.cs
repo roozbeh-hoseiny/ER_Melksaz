@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ProtoWeaver.Generation.Contracts;
+using ProtoWeaver.Generation.Mapping;
 using System.Reflection;
 
 namespace ProtoWeaver.Builder;
@@ -15,13 +16,11 @@ internal static class ProtoWeaverAssemblyScanner
                 if (type.IsAbstract || type.IsInterface)
                     continue;
 
-                RegisterAnnotationProcessors(
-                    services,
-                    type);
+                RegisterAnnotationProcessors(services, type);
 
-                RegisterGenerationSteps(
-                    services,
-                    type);
+                RegisterGenerationSteps(services, type);
+
+                RegisterAssignmentValueGenerators(services, type);
             }
         }
     }
@@ -30,6 +29,7 @@ internal static class ProtoWeaverAssemblyScanner
         IServiceCollection services,
         Type type)
     {
+
         RegisterByInterface(services, type, typeof(IProtoAnnotationProcessor<>));
     }
 
@@ -40,6 +40,18 @@ internal static class ProtoWeaverAssemblyScanner
         RegisterByInterface(services, type, typeof(IGenerationStep<>));
     }
 
+    private static void RegisterAssignmentValueGenerators(
+        IServiceCollection services,
+        Type type)
+    {
+        foreach (var i in type.GetInterfaces())
+        {
+            if (i == typeof(IAssignmentValueGenerator))
+                services.AddSingleton(i, type);
+        }
+
+    }
+
     private static void RegisterByInterface(
         IServiceCollection services,
         Type type,
@@ -48,8 +60,8 @@ internal static class ProtoWeaverAssemblyScanner
         foreach (var i in type.GetInterfaces())
         {
             // Register IProtoAnnotationProcessor<T>
-            if (i.IsGenericType &&
-                i.GetGenericTypeDefinition() == genericType)
+            if (i.IsGenericType
+                && i.GetGenericTypeDefinition() == genericType)
             {
                 services.AddSingleton(i, type);
                 continue;
@@ -57,8 +69,8 @@ internal static class ProtoWeaverAssemblyScanner
 
             // Register interfaces derived from IProtoAnnotationProcessor<T>
             if (i.GetInterfaces().Any(x =>
-                    x.IsGenericType &&
-                    x.GetGenericTypeDefinition() == genericType))
+                    x.IsGenericType
+                    && x.GetGenericTypeDefinition() == genericType))
             {
                 services.AddSingleton(i, type);
             }

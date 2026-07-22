@@ -23,11 +23,6 @@ internal sealed class MessagePropertiesGenerationStep : IProtoMessageGenerationS
     {
         if (!src.CanCreateClass) return;
 
-        if (src.Name == "AddRootCategory_GrpcRequest")
-        {
-
-        }
-
         var messageDocumentKey = src.GetDocumentKey();
 
         var builder = context.GetBuilder<CSharpClassBuilder>(messageDocumentKey);
@@ -55,8 +50,6 @@ internal sealed class MessagePropertiesGenerationStep : IProtoMessageGenerationS
         if (!annotation.Type.IsValueType && property.Message is not null)
         {
             var message = this._messageNameResolver.GetOrCreate(property.Message);
-
-
 
             if (message is not null)
             {
