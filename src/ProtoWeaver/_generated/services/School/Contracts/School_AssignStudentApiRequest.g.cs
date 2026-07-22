@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class School_AssignStudentApiRequest
+public internal class School_AssignStudentApiRequest
 {
 }

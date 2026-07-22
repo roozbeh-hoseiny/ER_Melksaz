@@ -27,4 +27,25 @@ internal class PropertyTypeResolverProcessor : IProtoPropertyAnnotationProcessor
 
         src.Annotations.Add(annotation);
     }
+
+    public void Process(ProtoProperty property, ProtoMessage message)
+    {
+        var resolved = CSharpPropertyResolver.Resolve(property);
+        var annotation = new CSharpPropertyAnnotation()
+        {
+            Name = resolved.Name,
+            IsNullable = resolved.IsNullable,
+            IsCollection = resolved.IsCollection,
+            DefaultValue = resolved.DefaultValue,
+            Type = new CSharpTypeAnnotation()
+            {
+                Name = resolved.Type.Name,
+                IsCollection = resolved.Type.IsCollection,
+                IsValueType = resolved.Type.IsValueType
+            }
+        };
+
+        property.Annotations.Add(annotation);
+    }
+
 }

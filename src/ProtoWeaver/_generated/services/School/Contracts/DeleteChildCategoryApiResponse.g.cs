@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class DeleteChildCategoryApiResponse
+public internal class DeleteChildCategoryApiResponse
 {
 }

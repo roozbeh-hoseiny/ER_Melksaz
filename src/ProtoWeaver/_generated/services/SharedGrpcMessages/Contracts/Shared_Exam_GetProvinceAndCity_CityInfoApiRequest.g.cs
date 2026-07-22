@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.SharedGrpcMessages.Contracts;
-public sealed class Shared_Exam_GetProvinceAndCity_CityInfoApiRequest
+public internal class Shared_Exam_GetProvinceAndCity_CityInfoApiRequest
 {
 }

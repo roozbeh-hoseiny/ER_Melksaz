@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class SetRemainedCreditApiRequest
+public internal class SetRemainedCreditApiRequest
 {
 }

@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.SharedGrpcMessages.Contracts;
-public sealed class Shared_Exam_GetRegisterableExamsApiRequest
+public internal class Shared_Exam_GetRegisterableExamsApiRequest
 {
 }

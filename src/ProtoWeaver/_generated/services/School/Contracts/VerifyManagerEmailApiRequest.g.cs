@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class VerifyManagerEmailApiRequest
+public internal class VerifyManagerEmailApiRequest
 {
 }

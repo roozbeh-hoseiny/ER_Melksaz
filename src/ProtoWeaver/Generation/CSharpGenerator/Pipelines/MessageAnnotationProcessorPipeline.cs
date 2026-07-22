@@ -20,13 +20,12 @@ internal sealed class MessageAnnotationProcessorPipeline
     {
         foreach (var property in message.Properties)
         {
-            this._propertyAnnotationProcessorPipeline.Execute(property);
+            this._propertyAnnotationProcessorPipeline.Execute(property, message);
         }
 
         foreach (var step in this._steps)
         {
             step.Process(message);
         }
-
     }
 }

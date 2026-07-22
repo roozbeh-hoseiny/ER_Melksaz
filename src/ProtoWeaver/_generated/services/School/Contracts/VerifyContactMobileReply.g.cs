@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class VerifyContactMobileReply
+public internal class VerifyContactMobileReply
 {
 }

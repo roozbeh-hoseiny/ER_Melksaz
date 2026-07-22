@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.SharedGrpcMessages.Contracts;
-public sealed class SharedApiRequest
+public internal class SharedApiRequest
 {
 }

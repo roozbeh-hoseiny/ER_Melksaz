@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class SendSmsOtpForManagerMobileVerificationApiResponse
+public internal class SendSmsOtpForManagerMobileVerificationApiResponse
 {
 }

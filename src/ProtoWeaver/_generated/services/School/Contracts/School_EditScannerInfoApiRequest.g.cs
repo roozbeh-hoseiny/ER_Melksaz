@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class School_EditScannerInfoApiRequest
+public internal class School_EditScannerInfoApiRequest
 {
 }

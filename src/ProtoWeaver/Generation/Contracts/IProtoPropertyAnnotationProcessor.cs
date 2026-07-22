@@ -2,4 +2,7 @@
 
 namespace ProtoWeaver.Generation.Contracts;
 
-public interface IProtoPropertyAnnotationProcessor : IProtoAnnotationProcessor<ProtoProperty> { }
+public interface IProtoPropertyAnnotationProcessor : IProtoAnnotationProcessor<ProtoProperty>
+{
+    void Process(ProtoProperty property, ProtoMessage message);
+}

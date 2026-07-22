@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class DeactivateSchoolApiResponse
+public internal class DeactivateSchoolApiResponse
 {
 }

@@ -12,11 +12,11 @@ internal sealed class PropertyAnnotationProcessorPipeline
         this._steps = steps.OrderBy(x => x.Order).ToList();
     }
 
-    public void Execute(ProtoProperty property)
+    public void Execute(ProtoProperty property, ProtoMessage message)
     {
         foreach (var step in this._steps)
         {
-            step.Process(property);
+            step.Process(property, message);
         }
     }
 }

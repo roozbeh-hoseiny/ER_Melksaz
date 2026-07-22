@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class VerifyManagerMobileApiResponse
+public internal class VerifyManagerMobileApiResponse
 {
 }

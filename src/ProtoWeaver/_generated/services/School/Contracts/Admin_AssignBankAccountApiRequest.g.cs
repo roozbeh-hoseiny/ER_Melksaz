@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class Admin_AssignBankAccountApiRequest
+public internal class Admin_AssignBankAccountApiRequest
 {
 }

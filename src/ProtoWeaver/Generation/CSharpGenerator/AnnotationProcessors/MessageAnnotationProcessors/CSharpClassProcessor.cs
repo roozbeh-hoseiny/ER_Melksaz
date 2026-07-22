@@ -35,7 +35,7 @@ internal abstract class CSharpMessageClassDefinitionProcessor<TMessageType>
             Namespace = AnnotationHelpers.GetPresentationMessageNamespace(serviceNameAnnotation.Name)
         };
         annotation.AddKeyword(SyntaxKind.PublicKeyword);
-        annotation.AddKeyword(SyntaxKind.SealedKeyword);
+        annotation.AddKeyword(SyntaxKind.InternalKeyword);
 
         src.AddAnnotation(annotation);
     }

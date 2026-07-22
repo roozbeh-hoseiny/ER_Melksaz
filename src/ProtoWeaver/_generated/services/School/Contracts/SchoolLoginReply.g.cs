@@ -1,4 +1,4 @@
 namespace ER.Sanjesh.Presentation.Services.School.Contracts;
-public sealed class SchoolLoginReply
+public internal class SchoolLoginReply
 {
 }
