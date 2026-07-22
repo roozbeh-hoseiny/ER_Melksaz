@@ -3,16 +3,15 @@ using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation.CSharpGenerator.Pipelines;
 
-internal sealed class ServiceGenerationPipeline
+internal sealed class PropertyGenerationPipeline
 {
-    private readonly IReadOnlyList<IProtoServiceGenerationStep> _steps;
+    private readonly IReadOnlyList<IProtoPropertyGenerationStep> _steps;
 
-    public ServiceGenerationPipeline(IEnumerable<IProtoServiceGenerationStep> steps)
+    public PropertyGenerationPipeline(IEnumerable<IProtoPropertyGenerationStep> steps)
     {
         this._steps = steps.OrderBy(x => x.Order).ToList();
     }
-
-    public void Execute(ProtoService service, GenerationContext context)
+    public void Execute(ProtoProperty service, GenerationContext context)
     {
         foreach (var step in this._steps)
         {

@@ -10,11 +10,15 @@ public static class ServiceCollectionExtensions
     {
         var builder = new ProtoWeaverBuilder(services);
 
+        services.AddSingleton<PropertyAnnotationProcessorPipeline>();
+        services.AddSingleton<MessageAnnotationProcessorPipeline>();
+        services.AddSingleton<ServiceAnnotationProcessorPipeline>();
+
+
+        services.AddSingleton<PropertyGenerationPipeline>();
         services.AddSingleton<MessageGenerationPipeline>();
         services.AddSingleton<ServiceGenerationPipeline>();
-        services.AddSingleton<ServiceAnnotationProcessorPipeline>();
-        services.AddSingleton<MessageAnnotationProcessorPipeline>();
-        services.AddSingleton<PropertyAnnotationProcessorPipeline>();
+
         services.AddSingleton<ProtoWeaverGenerator>();
 
         configure(builder);
