@@ -1,9 +1,10 @@
 ﻿using ProtoWeaver.Generation.Contracts;
 
 namespace ProtoWeaver.Generation;
+
 public sealed class AnnotationCollection
 {
-    private readonly Dictionary<Type, List<IProtoAnnotation>> _annotations = new();
+    private readonly Dictionary<Type, List<IProtoAnnotation>> _annotations = [];
 
 
     public void Add<TAnnotation>(TAnnotation annotation) where TAnnotation : IProtoAnnotation
@@ -34,7 +35,20 @@ public sealed class AnnotationCollection
             .ToArray();
     }
 
-
+    public IReadOnlyCollection<TAnnotation> GetAllDerived<TAnnotation>() where TAnnotation : IProtoAnnotation
+    {
+        return this._annotations.Values
+            .SelectMany(x => x)
+            .OfType<TAnnotation>()
+            .ToArray();
+    }
+    public TAnnotation? GetDerived<TAnnotation>() where TAnnotation : IProtoAnnotation
+    {
+        return this._annotations.Values
+            .SelectMany(x => x)
+            .OfType<TAnnotation>()
+            .FirstOrDefault();
+    }
     public TAnnotation? Get<TAnnotation>() where TAnnotation : IProtoAnnotation
     {
         var type = typeof(TAnnotation);

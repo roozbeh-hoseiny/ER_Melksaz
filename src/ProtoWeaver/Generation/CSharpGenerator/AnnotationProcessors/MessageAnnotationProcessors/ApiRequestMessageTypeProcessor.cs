@@ -2,7 +2,7 @@
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
-namespace ProtoWeaver.Generation.CSharpGenerator.Processors.MessageAnnotationProcessors;
+namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnnotationProcessors;
 
 internal sealed class ApiRequestMessageTypeProcessor : IProtoMessageAnnotationProcessor
 {

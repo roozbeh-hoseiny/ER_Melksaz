@@ -2,7 +2,7 @@
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
-namespace ProtoWeaver.Generation.CSharpGenerator.Processors.PropertyAnnotationProcessor;
+namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.PropertyAnnotationProcessor;
 
 internal class PropertyTypeResolverProcessor : IProtoPropertyAnnotationProcessor
 {

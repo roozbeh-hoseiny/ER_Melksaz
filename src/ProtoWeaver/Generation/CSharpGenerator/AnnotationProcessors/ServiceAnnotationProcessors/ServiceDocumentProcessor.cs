@@ -2,7 +2,7 @@
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
-namespace ProtoWeaver.Generation.CSharpGenerator.Processors.ServiceAnnotationProcessors;
+namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.ServiceAnnotationProcessors;
 
 internal sealed class ServiceDocumentProcessor : IProtoServiceAnnotationProcessor
 {
