@@ -4,7 +4,7 @@ using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.PropertyAnnotationProcessor;
 
-internal class PropertyTypeResolverProcessor : IProtoPropertyAnnotationProcessor
+internal sealed class PropertyTypeResolverProcessor : IProtoPropertyAnnotationProcessor
 {
     public int Order => 1;
 
@@ -15,7 +15,6 @@ internal class PropertyTypeResolverProcessor : IProtoPropertyAnnotationProcessor
         {
             Name = resolved.Name,
             IsNullable = resolved.IsNullable,
-            IsCollection = resolved.IsCollection,
             DefaultValue = resolved.DefaultValue,
             Type = new CSharpTypeAnnotation()
             {
@@ -35,7 +34,6 @@ internal class PropertyTypeResolverProcessor : IProtoPropertyAnnotationProcessor
         {
             Name = resolved.Name,
             IsNullable = resolved.IsNullable,
-            IsCollection = resolved.IsCollection,
             DefaultValue = resolved.DefaultValue,
             Type = new CSharpTypeAnnotation()
             {
@@ -47,5 +45,4 @@ internal class PropertyTypeResolverProcessor : IProtoPropertyAnnotationProcessor
 
         property.Annotations.Add(annotation);
     }
-
 }

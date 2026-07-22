@@ -32,12 +32,15 @@ public sealed class ProtoMethod : AnnotatableBase
     public bool ClientStreaming { get; init; }
     public bool ServerStreaming { get; init; }
 }
-public sealed class ProtoMessage : AnnotatableBase
+public class ProtoMessageBase : AnnotatableBase
 {
     public required string Name { get; init; }
     public required string FullName { get; init; }
     public required string Package { get; init; }
     public required string FileName { get; init; }
+}
+public sealed class ProtoMessage : ProtoMessageBase
+{
     public List<ProtoProperty> Properties { get; } = [];
 }
 public sealed class ProtoProperty : AnnotatableBase
@@ -52,4 +55,5 @@ public sealed class ProtoProperty : AnnotatableBase
     public bool IsPrimitive { get; init; }
     public ProtoMessage? Message { get; set; }
     public string? EnumName { get; init; }
+    public required ProtoMessageBase BaseMessage { get; init; }
 }

@@ -8,7 +8,6 @@ public sealed class CSharpPropertyAnnotation : IProtoAnnotation
     public required CSharpTypeAnnotation Type { get; init; }
 
     public bool IsNullable { get; init; }
-    public bool IsCollection { get; init; }
     public string DefaultValue { get; init; } = "default!";
 }
 public sealed record CSharpTypeAnnotation

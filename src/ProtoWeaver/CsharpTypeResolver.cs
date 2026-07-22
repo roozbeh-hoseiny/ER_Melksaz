@@ -15,9 +15,8 @@ public static class CSharpPropertyResolver
         {
             Name = property.Name,
             Type = type,
-            IsCollection = property.IsRepeated,
             IsNullable = ResolveNullable(property),
-            DefaultValue = ResolveDefaultValue(property, type)
+            DefaultValue = ResolveDefaultValue(property, type),
         };
     }
     private static bool ResolveNullable(ProtoProperty property)
@@ -48,6 +47,14 @@ public static class CSharpPropertyResolver
     {
         if (property.IsMessage)
         {
+            if (property.Message is not null &&
+                property.Message.Package.Equals("google.protobuf") &&
+                property.Message.Properties is not null &&
+                property.Message.Properties.Count == 1)
+            {
+                return CreateCsharpTypeFromProtoFieldType(
+                    property.Message.Properties[0]!.FieldType);
+            }
             return new CSharpType
             {
                 Name = property.Message!.Name,
@@ -64,66 +71,69 @@ public static class CSharpPropertyResolver
             };
         }
 
-        return property.FieldType switch
-        {
-            FieldType.String => new CSharpType
-            {
-                Name = "string",
-                IsValueType = false
-            },
-
-            FieldType.Bool => new CSharpType
-            {
-                Name = "bool",
-                IsValueType = true
-            },
-
-            FieldType.Int32 => new CSharpType
-            {
-                Name = "int",
-                IsValueType = true
-            },
-
-            FieldType.Int64 => new CSharpType
-            {
-                Name = "long",
-                IsValueType = true
-            },
-
-            FieldType.UInt32 => new CSharpType
-            {
-                Name = "uint",
-                IsValueType = true
-            },
-
-            FieldType.UInt64 => new CSharpType
-            {
-                Name = "ulong",
-                IsValueType = true
-            },
-
-            FieldType.Float => new CSharpType
-            {
-                Name = "float",
-                IsValueType = true
-            },
-
-            FieldType.Double => new CSharpType
-            {
-                Name = "double",
-                IsValueType = true
-            },
-
-            FieldType.Bytes => new CSharpType
-            {
-                Name = "byte[]",
-                IsValueType = false
-            },
-
-            _ => throw new NotSupportedException(
-                $"FieldType '{property.FieldType}' is not supported.")
-        };
+        return CreateCsharpTypeFromProtoFieldType(property.FieldType);
     }
+
+    private static CSharpType CreateCsharpTypeFromProtoFieldType(FieldType fieldType) => fieldType switch
+    {
+        FieldType.String => new CSharpType
+        {
+            Name = "string",
+            IsValueType = false
+        },
+
+        FieldType.Bool => new CSharpType
+        {
+            Name = "bool",
+            IsValueType = true
+        },
+
+        FieldType.Int32 => new CSharpType
+        {
+            Name = "int",
+            IsValueType = true
+        },
+
+        FieldType.Int64 => new CSharpType
+        {
+            Name = "long",
+            IsValueType = true
+        },
+
+        FieldType.UInt32 => new CSharpType
+        {
+            Name = "uint",
+            IsValueType = true
+        },
+
+        FieldType.UInt64 => new CSharpType
+        {
+            Name = "ulong",
+            IsValueType = true
+        },
+
+        FieldType.Float => new CSharpType
+        {
+            Name = "float",
+            IsValueType = true
+        },
+
+        FieldType.Double => new CSharpType
+        {
+            Name = "double",
+            IsValueType = true
+        },
+
+        FieldType.Bytes => new CSharpType
+        {
+            Name = "byte[]",
+            IsValueType = false
+        },
+
+        _ => throw new NotSupportedException(
+            $"FieldType '{fieldType}' is not supported.")
+    };
+
     private static string ResolveDefaultValue(
         ProtoProperty property,
         CSharpType type)

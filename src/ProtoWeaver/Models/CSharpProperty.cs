@@ -6,6 +6,5 @@ public sealed record CSharpProperty
     public required CSharpType Type { get; init; }
 
     public bool IsNullable { get; init; }
-    public bool IsCollection { get; init; }
     public string DefaultValue { get; init; } = "default!";
 }

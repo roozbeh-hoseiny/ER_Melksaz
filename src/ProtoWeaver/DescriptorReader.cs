@@ -2,6 +2,7 @@
 using ProtoWeaver.Models;
 
 namespace ProtoWeaver;
+
 public static class DescriptorReader
 {
     public static ProtoModel Read(IEnumerable<FileDescriptor> descriptors)
@@ -94,14 +95,15 @@ public static class DescriptorReader
         MessageDescriptor descriptor,
         ProtoModel model)
     {
-        var message =
-            model.Messages[descriptor.FullName];
+        var message = model.Messages[descriptor.FullName];
 
         foreach (var field in descriptor.Fields.InDeclarationOrder())
         {
             message.Properties.Add(
                 new ProtoProperty
                 {
+                    BaseMessage = message,
+
                     Name = ToPascalCase(field.Name),
 
                     ProtoName = field.Name,

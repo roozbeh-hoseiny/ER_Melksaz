@@ -35,7 +35,7 @@ internal abstract class CSharpMessageClassDefinitionProcessor<TMessageType>
             Namespace = AnnotationHelpers.GetPresentationMessageNamespace(serviceNameAnnotation.Name)
         };
         annotation.AddKeyword(SyntaxKind.PublicKeyword);
-        annotation.AddKeyword(SyntaxKind.InternalKeyword);
+        annotation.AddKeyword(SyntaxKind.SealedKeyword);
 
         src.AddAnnotation(annotation);
     }
@@ -59,5 +59,47 @@ internal sealed class CSharpApiReplyMessageClassDefinitionProcessor : CSharpMess
     public CSharpApiReplyMessageClassDefinitionProcessor() : base("Reply")
     {
 
+    }
+}
+
+public interface IMessageNameResolver
+{
+    void Add(MessageKey key, MessageName value);
+    MessageName? GetOrCreate(ProtoMessage message);
+    MessageName? Get(MessageKey key);
+    MessageName? Create(ProtoMessage message);
+
+}
+public readonly record struct MessageKey(string Package, string Fullname);
+public sealed record MessageName(string Namespace, string ClassName);
+
+internal sealed class MessageNameResolver : IMessageNameResolver
+{
+    private static readonly Dictionary<MessageKey, MessageName> _messages = [];
+    public void Add(MessageKey key, MessageName value)
+    {
+        _messages.TryAdd(key, value);
+    }
+
+    public MessageName? Get(MessageKey key)
+    {
+        if (!_messages.TryGetValue(key, out var result)) return null;
+        return result;
+    }
+    public MessageName? Create(ProtoMessage message)
+    {
+        var classAnnotation = message.Annotations.Get<CSharpClassAnnotation>();
+
+        if (classAnnotation is null) return null;
+
+        return new MessageName(classAnnotation.Namespace, classAnnotation.ClassName);
+    }
+
+    public MessageName? GetOrCreate(ProtoMessage message)
+    {
+        var result = this.Get(new MessageKey(
+            message.Package,
+            message.FullName));
+        return result ?? this.Create(message);
     }
 }

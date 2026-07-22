@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using ProtoWeaver;
 using ProtoWeaver.Builder;
 using ProtoWeaver.Generation.CSharpGenerator;
+using ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnnotationProcessors;
 using Serilog;
 try
 {
@@ -40,6 +41,8 @@ IHostBuilder CreateHostBuilder(string[] args) =>
             {
                 builder.WithWriter<CSharpDocumentWriter>();
                 builder.ScanAssembly(ProtoWeaverAssemblyReference.Assembly);
+
+                builder.Services.AddSingleton<IMessageNameResolver, MessageNameResolver>();
             });
 
             //services.AddProtoWeaver(builder => {
@@ -76,6 +79,8 @@ IHostBuilder CreateHostBuilder(string[] args) =>
             //services.AddSingleton<IProtoServiceAnnotationProcessor, ServiceNameProcessor>();
 
             //services.AddSingleton<IProtoServiceGenerationStep, ClassDeclarationStep>();
+
+            //A2HMNO050B0000ED030696
 
             services.AddHostedService<ServiceWorker>();
         });

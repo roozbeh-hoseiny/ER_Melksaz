@@ -6,5 +6,5 @@ public interface IAnnotationProcessor
 }
 public interface IProtoAnnotationProcessor<in T> : IAnnotationProcessor
 {
-    void Process(T src);
+
 }
