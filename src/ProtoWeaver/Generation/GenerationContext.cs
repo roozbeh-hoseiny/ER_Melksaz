@@ -74,7 +74,7 @@ public sealed class GenerationContext
         return builder is not null;
     }
 
-    public TBuilder GetOrCreate<TBuilder>(
+    public TBuilder GetOrCreateDocumentBuilder<TBuilder>(
         DocumentKey key,
         string fileName,
         Func<TBuilder> factory)

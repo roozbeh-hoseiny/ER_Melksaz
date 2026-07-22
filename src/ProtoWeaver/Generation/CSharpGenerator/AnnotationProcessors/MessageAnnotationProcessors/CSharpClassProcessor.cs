@@ -1,4 +1,5 @@
-﻿using ProtoWeaver.Generation.Contracts;
+﻿using Microsoft.CodeAnalysis.CSharp;
+using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
@@ -6,7 +7,7 @@ namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnn
 
 internal abstract class CSharpMessageClassDefinitionProcessor<TMessageType>
     : IProtoMessageAnnotationProcessor
-    where TMessageType : MessageTypeBase
+    where TMessageType : IMessageTypeBase
 {
     private readonly string _messagePostfix;
 
@@ -24,15 +25,19 @@ internal abstract class CSharpMessageClassDefinitionProcessor<TMessageType>
         if (serviceNameAnnotation is null)
             throw new MissingAnnotationException(typeof(ServiceNameAnnotation));
 
-        var messageTypeAnnotation = src.Annotations.GetDerived<MessageTypeBase>();
+        var messageTypeAnnotation = src.Annotations.GetDerived<IMessageTypeBase>();
 
         if (messageTypeAnnotation is not TMessageType && !src.IsSharedMessage) return;
 
-        src.Annotations.Add(new CSharpClassAnnotation()
+        var annotation = new CSharpClassAnnotation()
         {
             ClassName = $"{AnnotationHelpers.RemoveLastPart(src.Name)}{this._messagePostfix}",
             Namespace = AnnotationHelpers.GetPresentationMessageNamespace(serviceNameAnnotation.Name)
-        });
+        };
+        annotation.AddKeyword(SyntaxKind.PublicKeyword);
+        annotation.AddKeyword(SyntaxKind.SealedKeyword);
+
+        src.AddAnnotation(annotation);
     }
 }
 internal sealed class CSharpApiRequestMessageClassDefinitionProcessor : CSharpMessageClassDefinitionProcessor<ApiRequestMessageType>

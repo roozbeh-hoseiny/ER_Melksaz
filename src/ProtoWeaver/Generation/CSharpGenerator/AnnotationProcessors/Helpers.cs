@@ -10,7 +10,23 @@ internal static class AnnotationHelpers
             : span;
     }
 
-    public static string GetServiceName(string packagedName) => packagedName.Split('.')[2];
+    public static string GetServiceName(ReadOnlySpan<char> packageName)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            var index = packageName.IndexOf('.');
+            if (index < 0)
+                return string.Empty;
+
+            packageName = packageName[(index + 1)..];
+        }
+
+        var end = packageName.IndexOf('.');
+
+        return end >= 0
+            ? packageName[..end].ToString()
+            : packageName.ToString();
+    }
 
     public static string GetPresentationMessageNamespace(string serviceName) =>
         $"ER.Sanjesh.Presentation.Services.{serviceName}.Contracts";

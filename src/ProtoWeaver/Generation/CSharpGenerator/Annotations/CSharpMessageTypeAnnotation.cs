@@ -2,24 +2,35 @@
 
 namespace ProtoWeaver.Generation.CSharpGenerator.Annotations;
 
-public abstract class MessageTypeBase : IProtoAnnotation { }
-public sealed class ApiRequestMessageType : MessageTypeBase
+public interface IMessageTypeBase : IProtoAnnotation
 {
-    public readonly static ApiRequestMessageType Instance = new ApiRequestMessageType();
+    string MessageTypeName { get; }
 }
-public sealed class ApiResponseMessageType : MessageTypeBase
+public sealed class ApiRequestMessageType : IMessageTypeBase
 {
-    public readonly static ApiResponseMessageType Instance = new ApiResponseMessageType();
+    public static readonly ApiRequestMessageType Instance = new ApiRequestMessageType();
+
+    public string MessageTypeName => "ApiRequest";
 }
-public sealed class ApiReplyMessageType : MessageTypeBase
+public sealed class ApiResponseMessageType : IMessageTypeBase
 {
-    public readonly static ApiReplyMessageType Instance = new ApiReplyMessageType();
+    public static readonly ApiResponseMessageType Instance = new ApiResponseMessageType();
+
+    public string MessageTypeName => "ApiResponse";
 }
-public sealed class GoogleMessageType : MessageTypeBase
+public sealed class ApiReplyMessageType : IMessageTypeBase
 {
-    public readonly static GoogleMessageType Instance = new GoogleMessageType();
+    public static readonly ApiReplyMessageType Instance = new ApiReplyMessageType();
+
+    public string MessageTypeName => "ApiReply";
 }
-public sealed class SharedMessageType : MessageTypeBase
+public sealed class GoogleMessageType : IMessageTypeBase
 {
-    public readonly static SharedMessageType Instance = new SharedMessageType();
+    public static readonly GoogleMessageType Instance = new GoogleMessageType();
+    public string MessageTypeName => "Google";
+}
+public sealed class SharedMessageType : IMessageTypeBase
+{
+    public static readonly SharedMessageType Instance = new SharedMessageType();
+    public string MessageTypeName => "Shared";
 }

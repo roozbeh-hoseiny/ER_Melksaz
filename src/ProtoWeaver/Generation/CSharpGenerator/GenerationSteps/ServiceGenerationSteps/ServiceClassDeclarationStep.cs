@@ -2,9 +2,9 @@
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
-namespace ProtoWeaver.Generation.CSharpGenerator.GenerationSteps;
+namespace ProtoWeaver.Generation.CSharpGenerator.GenerationSteps.ServiceGenerationSteps;
 
-internal sealed class ClassDeclarationStep : IProtoServiceGenerationStep
+internal sealed class ServiceClassDeclarationStep : IProtoServiceGenerationStep
 {
     public int Order => 1;
 
@@ -17,7 +17,7 @@ internal sealed class ClassDeclarationStep : IProtoServiceGenerationStep
 
         var documentKey = DocumentKeys.Service(classAnnotation.ClassName);
 
-        var builder = context.GetOrCreate(
+        var builder = context.GetOrCreateDocumentBuilder(
             documentKey,
             $"{classAnnotation.ClassName}.g.cs",
             () => new CSharpClassBuilder());
