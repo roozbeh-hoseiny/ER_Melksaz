@@ -237,3 +237,4 @@ packages/
 **/node_modules/
 **/obj/
 appsettings.*.json
+**/_generated/
