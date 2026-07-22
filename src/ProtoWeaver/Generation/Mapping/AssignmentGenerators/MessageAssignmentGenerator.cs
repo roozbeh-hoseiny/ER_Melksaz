@@ -21,9 +21,6 @@ internal sealed class MessageAssignmentGenerator : IAssignmentValueGenerator
     public AssignmentExpressionSyntax Generate(AssignmentGenerationContext context)
     {
         var message = this._messageNameResolver.GetOrCreate(context.Message);
-        if (message is null)
-        {
-        }
 
         var invocation =
             SyntaxFactory.InvocationExpression(
