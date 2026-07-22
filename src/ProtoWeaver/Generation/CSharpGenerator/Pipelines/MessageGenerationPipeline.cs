@@ -1,7 +1,7 @@
 ﻿using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Models;
 
-namespace ProtoWeaver.Generation;
+namespace ProtoWeaver.Generation.CSharpGenerator.Pipelines;
 
 internal sealed class MessageGenerationPipeline
 {
@@ -12,11 +12,11 @@ internal sealed class MessageGenerationPipeline
         this._steps = steps.OrderBy(x => x.Order).ToList();
     }
 
-    public void Execute(ProtoMessage service, GenerationContext context)
+    public void Execute(ProtoMessage message, GenerationContext context)
     {
         foreach (var step in this._steps)
         {
-            step.Execute(service, context);
+            step.Execute(message, context);
         }
     }
 }

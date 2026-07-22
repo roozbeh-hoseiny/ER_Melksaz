@@ -2,9 +2,10 @@
 using ProtoWeaver.Models;
 
 namespace ProtoWeaver;
-public sealed class CSharpPropertyResolver
+
+public static class CSharpPropertyResolver
 {
-    public CSharpProperty Resolve(ProtoProperty property)
+    public static CSharpProperty Resolve(ProtoProperty property)
     {
         ArgumentNullException.ThrowIfNull(property);
 
@@ -43,7 +44,6 @@ public sealed class CSharpPropertyResolver
             IsValueType = false
         };
     }
-
     private static CSharpType ResolveElementType(ProtoProperty property)
     {
         if (property.IsMessage)
@@ -124,7 +124,6 @@ public sealed class CSharpPropertyResolver
                 $"FieldType '{property.FieldType}' is not supported.")
         };
     }
-
     private static string ResolveDefaultValue(
         ProtoProperty property,
         CSharpType type)

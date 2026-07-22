@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ProtoWeaver.Generation;
+using ProtoWeaver.Generation.CSharpGenerator.Pipelines;
 
 namespace ProtoWeaver.Builder;
 
@@ -13,6 +14,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ServiceGenerationPipeline>();
         services.AddSingleton<ServiceAnnotationProcessorPipeline>();
         services.AddSingleton<MessageAnnotationProcessorPipeline>();
+        services.AddSingleton<PropertyAnnotationProcessorPipeline>();
         services.AddSingleton<ProtoWeaverGenerator>();
 
         configure(builder);

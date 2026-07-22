@@ -1,4 +1,5 @@
 ﻿using ProtoWeaver.Generation.CSharpGenerator;
+using ProtoWeaver.Generation.CSharpGenerator.Pipelines;
 using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation;

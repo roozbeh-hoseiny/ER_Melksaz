@@ -1,7 +1,7 @@
 ﻿using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Models;
 
-namespace ProtoWeaver.Generation;
+namespace ProtoWeaver.Generation.CSharpGenerator.Pipelines;
 
 internal sealed class ServiceAnnotationProcessorPipeline
 {
