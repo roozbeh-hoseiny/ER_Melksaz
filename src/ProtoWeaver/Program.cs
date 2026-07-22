@@ -3,12 +3,8 @@ using ER.Melksaz.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProtoWeaver;
-using ProtoWeaver.Generation;
-using ProtoWeaver.Generation.Contracts;
+using ProtoWeaver.Builder;
 using ProtoWeaver.Generation.CSharpGenerator;
-using ProtoWeaver.Generation.CSharpGenerator.GenerationSteps;
-using ProtoWeaver.Generation.CSharpGenerator.Processors.MessageAnnotationProcessors;
-using ProtoWeaver.Generation.CSharpGenerator.Processors.ServiceAnnotationProcessors;
 using Serilog;
 try
 {
@@ -40,6 +36,12 @@ IHostBuilder CreateHostBuilder(string[] args) =>
                 hostBuilderContext.HostingEnvironment,
                 ProtoWeaverAssemblyReference.Assembly);
 
+            services.AddProtoWeaver(builder =>
+            {
+                builder.WithWriter<CSharpDocumentWriter>();
+                builder.ScanAssembly(ProtoWeaverAssemblyReference.Assembly);
+            });
+
             //services.AddProtoWeaver(builder => {
 
             //    builder.WithWriter<CSharpDocumentWriter>();
@@ -55,25 +57,25 @@ IHostBuilder CreateHostBuilder(string[] args) =>
             //    builder.AddProtoServiceGenerationStep<ClassDeclarationStep>();
             //});
 
-            services.AddSingleton<MessageGenerationPipeline>();
-            services.AddSingleton<ServiceGenerationPipeline>();
-            services.AddSingleton<ServiceAnnotationProcessorPipeline>();
-            services.AddSingleton<MessageAnnotationProcessorPipeline>();
+            //services.AddSingleton<MessageGenerationPipeline>();
+            //services.AddSingleton<ServiceGenerationPipeline>();
+            //services.AddSingleton<ServiceAnnotationProcessorPipeline>();
+            //services.AddSingleton<MessageAnnotationProcessorPipeline>();
+            //services.AddSingleton<ProtoWeaverGenerator>();
 
-            services.AddSingleton<ICSharpDocumentWriter, CSharpDocumentWriter>();
-            services.AddSingleton<ProtoWeaverGenerator>();
+            //services.AddSingleton<ICSharpDocumentWriter, CSharpDocumentWriter>();
 
-            services.AddSingleton<IProtoMessageAnnotationProcessor, GoogleMessageTypeProcessor>();
-            services.AddSingleton<IProtoMessageAnnotationProcessor, SharedMessageTypeProcessor>();
-            services.AddSingleton<IProtoMessageAnnotationProcessor, ApiRequestMessageTypeProcessor>();
-            services.AddSingleton<IProtoMessageAnnotationProcessor, ApiResponseMessageTypeProcessor>();
-            services.AddSingleton<IProtoMessageAnnotationProcessor, ApiReplyMessageTypeProcessor>();
+            //services.AddSingleton<IProtoMessageAnnotationProcessor, GoogleMessageTypeProcessor>();
+            //services.AddSingleton<IProtoMessageAnnotationProcessor, SharedMessageTypeProcessor>();
+            //services.AddSingleton<IProtoMessageAnnotationProcessor, ApiRequestMessageTypeProcessor>();
+            //services.AddSingleton<IProtoMessageAnnotationProcessor, ApiResponseMessageTypeProcessor>();
+            //services.AddSingleton<IProtoMessageAnnotationProcessor, ApiReplyMessageTypeProcessor>();
 
-            services.AddSingleton<IProtoServiceAnnotationProcessor, CSharpClassProcessor>();
-            services.AddSingleton<IProtoServiceAnnotationProcessor, ServiceDocumentProcessor>();
-            services.AddSingleton<IProtoServiceAnnotationProcessor, ServiceNameProcessor>();
+            //services.AddSingleton<IProtoServiceAnnotationProcessor, CSharpClassProcessor>();
+            //services.AddSingleton<IProtoServiceAnnotationProcessor, ServiceDocumentProcessor>();
+            //services.AddSingleton<IProtoServiceAnnotationProcessor, ServiceNameProcessor>();
 
-            services.AddSingleton<IProtoServiceGenerationStep, ClassDeclarationStep>();
+            //services.AddSingleton<IProtoServiceGenerationStep, ClassDeclarationStep>();
 
             services.AddHostedService<ServiceWorker>();
         });

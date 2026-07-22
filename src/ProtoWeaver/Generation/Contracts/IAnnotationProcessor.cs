@@ -4,8 +4,7 @@ public interface IAnnotationProcessor
 {
     int Order { get; }
 }
-
-public interface IGenerationStep
+public interface IProtoAnnotationProcessor<in T> : IAnnotationProcessor
 {
-    int Order { get; }
+    void Process(T src);
 }

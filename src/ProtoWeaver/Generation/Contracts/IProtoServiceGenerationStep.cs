@@ -2,7 +2,4 @@
 
 namespace ProtoWeaver.Generation.Contracts;
 
-public interface IProtoServiceGenerationStep : IGenerationStep
-{
-    void Execute(ProtoService src, GenerationContext context);
-}
+public interface IProtoServiceGenerationStep : IGenerationStep<ProtoService> { }

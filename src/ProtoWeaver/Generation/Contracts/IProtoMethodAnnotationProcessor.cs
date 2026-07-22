@@ -2,7 +2,4 @@
 
 namespace ProtoWeaver.Generation.Contracts;
 
-public interface IProtoMethodAnnotationProcessor : IAnnotationProcessor
-{
-    void Process(ProtoMethod src);
-}
+public interface IProtoMethodAnnotationProcessor : IProtoAnnotationProcessor<ProtoMethod>;
