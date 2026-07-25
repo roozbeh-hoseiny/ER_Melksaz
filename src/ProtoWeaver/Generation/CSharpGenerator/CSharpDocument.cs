@@ -1,4 +1,6 @@
-﻿namespace ProtoWeaver.Generation.CSharpGenerator;
+﻿using ProtoWeaver.Generation.CSharpGenerator.Contracts;
+
+namespace ProtoWeaver.Generation.CSharpGenerator;
 
 public sealed class CSharpDocument
 {

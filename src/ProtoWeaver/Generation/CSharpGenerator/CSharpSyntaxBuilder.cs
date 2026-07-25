@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ProtoWeaver.Generation.CSharpGenerator.Contracts;
 
 namespace ProtoWeaver.Generation.CSharpGenerator;
 

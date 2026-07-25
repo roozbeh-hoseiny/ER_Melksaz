@@ -1,5 +1,6 @@
 ﻿using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator;
+using ProtoWeaver.Generation.CSharpGenerator.Contracts;
 
 namespace ProtoWeaver.Generation;
 

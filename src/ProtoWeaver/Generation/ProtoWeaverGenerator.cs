@@ -1,4 +1,4 @@
-﻿using ProtoWeaver.Generation.CSharpGenerator;
+﻿using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.Pipelines;
 using ProtoWeaver.Models;
 
@@ -10,14 +10,14 @@ internal sealed class ProtoWeaverGenerator
     private readonly ServiceAnnotationProcessorPipeline _serviceAnnotationProcessorPipeline;
     private readonly MessageGenerationPipeline _messageGenerationPipeline;
     private readonly ServiceGenerationPipeline _serviceGenerationPipeline;
-    private readonly ICSharpDocumentWriter _writer;
+    private readonly IDocumentWriter _writer;
 
     public ProtoWeaverGenerator(
         ServiceAnnotationProcessorPipeline serviceAnnotationProcessorPipeline,
         MessageAnnotationProcessorPipeline messageAnnotationProcessorPipeline,
         MessageGenerationPipeline messageGenerationPipeline,
         ServiceGenerationPipeline serviceGenerationPipeline,
-        ICSharpDocumentWriter writer)
+        IDocumentWriter writer)
     {
         this._serviceAnnotationProcessorPipeline = serviceAnnotationProcessorPipeline;
         this._messageAnnotationProcessorPipeline = messageAnnotationProcessorPipeline;

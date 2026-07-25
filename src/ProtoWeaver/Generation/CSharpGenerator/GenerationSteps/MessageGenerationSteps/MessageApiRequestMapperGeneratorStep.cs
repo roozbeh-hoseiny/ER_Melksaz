@@ -45,20 +45,23 @@ internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenera
 
         foreach (var property in message.Properties)
         {
-            var propertyAnnotation =
-                property.Annotations.Get<CSharpPropertyAnnotation>();
+            var targetPropertyAnnotation = property.Annotations.Get<CSharpPropertyAnnotation>();
+            var sourcePropertyAnnotation = property.Annotations.Get<PropertyNameAnnotation>();
 
             var assignmentContext =
                 new AssignmentGenerationContext
                 {
                     Message = message,
                     Property = property,
-                    SourceExpression =
-                        SyntaxFactory.IdentifierName("src"),
+                    SourceExpression = SyntaxFactory.IdentifierName("src"),
+
+                    SourcePropertyName =
+                        sourcePropertyAnnotation?.Name
+                        ?? property.ProtoName,
 
                     TargetPropertyName =
-                        propertyAnnotation?.Name
-                        ?? property.ProtoName
+                        targetPropertyAnnotation?.Name
+                        ?? property.ProtoName,
                 };
 
             var generator =

@@ -24,6 +24,6 @@ internal sealed class PrimitiveAssignmentGenerator : IAssignmentValueGenerator
                 SyntaxKind.SimpleMemberAccessExpression,
                 context.SourceExpression,
                 SyntaxFactory.IdentifierName(
-                    context.Property.Name)));
+                    context.SourcePropertyName)));
     }
 }

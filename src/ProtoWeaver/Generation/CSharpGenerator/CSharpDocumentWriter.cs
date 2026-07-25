@@ -1,10 +1,11 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 
 namespace ProtoWeaver.Generation.CSharpGenerator;
 
-public sealed class CSharpDocumentWriter : ICSharpDocumentWriter
+public sealed class CSharpDocumentWriter : IDocumentWriter
 {
     public void Write(GenerationContext context, string outputDirectory)
     {

@@ -7,14 +7,8 @@ public sealed class AssignmentGenerationContext
 {
     public required ProtoMessage Message { get; init; }
     public required ProtoProperty Property { get; init; }
-
-    /// <summary>
-    /// مثلا src
-    /// </summary>
     public required ExpressionSyntax SourceExpression { get; init; }
-
-    /// <summary>
-    /// مثلا ResourceId
-    /// </summary>
+    public required string SourcePropertyName { get; init; }
     public required string TargetPropertyName { get; init; }
+
 }

@@ -26,7 +26,6 @@ internal sealed class MessageClassDeclarationStep : IProtoMessageGenerationStep
 
         if (classNameInfo is null || classAnnotation is null) return;
 
-
         var documentKey = src.GetDocumentKey();
 
         var builder = context.GetOrCreateDocumentBuilder(

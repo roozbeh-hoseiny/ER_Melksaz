@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ProtoWeaver.Generation.CSharpGenerator;
+using ProtoWeaver.Generation.Contracts;
 using System.Reflection;
 
 namespace ProtoWeaver.Builder;
@@ -10,7 +10,7 @@ public interface IProtoWeaverBuilder
 
     ProtoWeaverOptions Options { get; }
 
-    IProtoWeaverBuilder WithWriter<TWriter>() where TWriter : class, ICSharpDocumentWriter;
+    IProtoWeaverBuilder WithWriter<TWriter>() where TWriter : class, IDocumentWriter;
 
     IProtoWeaverBuilder ScanAssembly(Assembly assembly);
 

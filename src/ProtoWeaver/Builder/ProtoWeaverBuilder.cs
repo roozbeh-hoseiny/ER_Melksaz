@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ProtoWeaver.Generation.CSharpGenerator;
+using ProtoWeaver.Generation.Contracts;
 using System.Reflection;
 
 namespace ProtoWeaver.Builder;
@@ -14,11 +14,11 @@ public sealed class ProtoWeaverBuilder : IProtoWeaverBuilder
         this.Services = services;
     }
 
-    public IProtoWeaverBuilder WithWriter<TWriter>() where TWriter : class, ICSharpDocumentWriter
+    public IProtoWeaverBuilder WithWriter<TWriter>() where TWriter : class, IDocumentWriter
     {
         this.Options.WriterType = typeof(TWriter);
 
-        this.Services.AddSingleton<ICSharpDocumentWriter, TWriter>();
+        this.Services.AddSingleton<IDocumentWriter, TWriter>();
 
         return this;
     }

@@ -29,57 +29,39 @@ internal sealed class MessagePropertiesGenerationStep : IProtoMessageGenerationS
 
         foreach (var property in src.Properties)
         {
-            var propertyClrAnnotation = property.Annotations.Get<CSharpPropertyAnnotation>();
-
-            if (propertyClrAnnotation is null) continue;
+            var propertySyntax = CreateProperty(
+                   builder,
+                   property);
+            if (propertySyntax is null) continue;
 
             builder.UpdateClass(cls =>
-               cls.AddMembers(this.CreateProperty(
-                   builder,
-                   property,
-                   propertyClrAnnotation)));
+               cls.AddMembers(
+                   propertySyntax));
         }
     }
-    private PropertyDeclarationSyntax CreateProperty(
+
+    private static PropertyDeclarationSyntax? CreateProperty(
         CSharpClassBuilder builder,
-        ProtoProperty property,
-        CSharpPropertyAnnotation annotation)
+        ProtoProperty property)
     {
-        var typeName = annotation.Type.Name;
+        var cSharpPropertyAnnotation = property.Annotations.Get<CSharpPropertyAnnotation>();
+        var propertyClrTypeAnnotation = property.Annotations.Get<PropertyClrTypeAnnotation>();
+        var propertyIsIncludedAnnotation = property.Annotations.Get<PropertyIncludedInMessageAnnotation>();
+        var propertyNameAnnotation = property.Annotations.Get<PropertyNameAnnotation>();
 
-        if (!annotation.Type.IsValueType && property.Message is not null)
+        if (cSharpPropertyAnnotation is null) return null;
+        if (propertyClrTypeAnnotation is null) return null;
+        if (propertyIsIncludedAnnotation is null) return null;
+        if (propertyNameAnnotation is null) return null;
+
+
+        if (!string.IsNullOrWhiteSpace(propertyClrTypeAnnotation.ClrTypeNamespace))
         {
-            var message = this._messageNameResolver.GetOrCreate(property.Message);
-
-            if (message is not null)
-            {
-                builder.AddUsing(message.Namespace);
-
-                typeName = message.ClassName;
-            }
-            else
-            {
-                typeName = CSharpPropertyResolver.Resolve(property).Type.Name;
-            }
+            builder.AddUsing(propertyClrTypeAnnotation.ClrTypeNamespace);
         }
-
-        if (annotation.Type.IsCollection)
-        {
-            typeName = $"IReadOnlyList<{typeName}>";
-        }
-
-        if (annotation.IsNullable && annotation.Type.IsValueType)
-        {
-            typeName += "?";
-        }
-        else if (annotation.IsNullable)
-        {
-            typeName += "?";
-        }
-
         return PropertyDeclaration(
-                ParseTypeName(typeName),
-                Identifier(annotation.Name))
+                ParseTypeName(propertyClrTypeAnnotation.ClrType),
+                Identifier(propertyNameAnnotation.Name))
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddAccessorListAccessors(
                 AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
@@ -88,7 +70,7 @@ internal sealed class MessagePropertiesGenerationStep : IProtoMessageGenerationS
                     .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)))
             .WithInitializer(
                 EqualsValueClause(
-                    ParseExpression(annotation.DefaultValue)))
+                    ParseExpression(cSharpPropertyAnnotation.DefaultValue)))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
     }
 }
