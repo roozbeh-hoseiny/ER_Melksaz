@@ -15,12 +15,16 @@ internal sealed class MessageAssignmentGenerator : IAssignmentValueGenerator
 
     public bool CanHandle(AssignmentGenerationContext context)
     {
-        return context.Property.Message is not null;
+        return context.Property.Message is not null && context.Message.Package != "google.protobuf";
     }
 
     public AssignmentExpressionSyntax Generate(AssignmentGenerationContext context)
     {
         var message = this._messageNameResolver.GetOrCreate(context.Message);
+        var x = this._messageNameResolver.GetOrCreate(context.Property.Message);
+        if (x is null)
+        {
+        }
 
         var invocation =
             SyntaxFactory.InvocationExpression(

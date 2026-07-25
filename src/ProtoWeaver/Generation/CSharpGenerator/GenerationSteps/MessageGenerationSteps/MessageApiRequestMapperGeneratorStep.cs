@@ -48,6 +48,11 @@ internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenera
             var targetPropertyAnnotation = property.Annotations.Get<CSharpPropertyAnnotation>();
             var sourcePropertyAnnotation = property.Annotations.Get<PropertyNameAnnotation>();
 
+            if (property.Name.Equals("ManagerInfo"))
+            {
+
+            }
+
             var assignmentContext =
                 new AssignmentGenerationContext
                 {

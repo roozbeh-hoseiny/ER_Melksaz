@@ -32,7 +32,7 @@ internal sealed class ServiceWorker : BackgroundService
 
         ProtoWeaver.Models.ProtoModel? protoModel = DescriptorReader.Read(descriptors?.ToArray() ?? []);
 
-        this._generator.Generate(protoModel, @"C:\works\PersonalWorks\ER_Melksaz\src\ProtoWeaver\_generated");
+        this._generator.Generate(protoModel, @"C:\works\PersonalWorks\ER_Melksaz\src\ProtoWeaver\bin\Debug\net10.0\_generated");
 
         this._logger.LogInformation(protoModel.Messages.Count.ToString());
     }
