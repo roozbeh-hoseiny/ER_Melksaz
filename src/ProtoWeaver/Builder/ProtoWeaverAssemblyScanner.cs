@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ProtoWeaver.Generation.Contracts;
-using ProtoWeaver.Generation.Mapping;
 using System.Reflection;
 
 namespace ProtoWeaver.Builder;
@@ -21,6 +20,8 @@ internal static class ProtoWeaverAssemblyScanner
                 RegisterGenerationSteps(services, type);
 
                 RegisterAssignmentValueGenerators(services, type);
+
+                RegisterPrototypeClassifiers(services, type);
             }
         }
     }
@@ -47,6 +48,17 @@ internal static class ProtoWeaverAssemblyScanner
         foreach (var i in type.GetInterfaces())
         {
             if (i == typeof(IAssignmentValueGenerator))
+                services.AddSingleton(i, type);
+        }
+
+    }
+    private static void RegisterPrototypeClassifiers(
+        IServiceCollection services,
+        Type type)
+    {
+        foreach (var i in type.GetInterfaces())
+        {
+            if (i == typeof(IProtoTypeClassifier))
                 services.AddSingleton(i, type);
         }
 

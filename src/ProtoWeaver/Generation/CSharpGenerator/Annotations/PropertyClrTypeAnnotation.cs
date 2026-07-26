@@ -6,4 +6,5 @@ internal sealed class PropertyClrTypeAnnotation : IProtoAnnotation
 {
     public required string ClrType { get; init; }
     public string ClrTypeNamespace { get; set; } = string.Empty;
+    public bool IsPrimitive { get; set; } = true;
 }

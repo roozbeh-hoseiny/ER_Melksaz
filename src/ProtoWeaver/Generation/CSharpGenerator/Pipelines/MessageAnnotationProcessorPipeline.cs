@@ -18,14 +18,14 @@ internal sealed class MessageAnnotationProcessorPipeline
 
     public void Execute(ProtoMessage message)
     {
-        foreach (var property in message.Properties)
-        {
-            this._propertyAnnotationProcessorPipeline.Execute(property, message);
-        }
-
         foreach (var step in this._steps)
         {
             step.Process(message);
+        }
+
+        foreach (var property in message.Properties)
+        {
+            this._propertyAnnotationProcessorPipeline.Execute(property, message);
         }
     }
 }

@@ -51,9 +51,11 @@ public sealed class ProtoProperty : AnnotatableBase
     public bool IsRepeated { get; init; }
     public bool IsNullable { get; init; }
     public bool IsMessage { get; init; }
+    public bool IsRequired { get; init; }
     public bool IsEnum { get; init; }
     public bool IsPrimitive { get; init; }
     public ProtoMessage? Message { get; set; }
     public string? EnumName { get; init; }
     public required ProtoMessageBase BaseMessage { get; init; }
+    public required FieldDescriptor FieldDescriptor { get; init; }
 }

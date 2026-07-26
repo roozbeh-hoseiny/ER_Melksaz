@@ -3,22 +3,24 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnnotationProcessors;
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
-using ProtoWeaver.Generation.Mapping;
 using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation.CSharpGenerator.GenerationSteps.MessageGenerationSteps;
 
 internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenerationStep
 {
+    private readonly IProtoTypeClassifierResolver _protoTypeClassifierResolver;
     private readonly IAssignmentGeneratorResolver _assignmentGeneratorResolver;
     private readonly IMessageNameResolver _messageNameResolver;
 
     public int Order => 3;
 
     public MessageApiRequestMapperGeneratorStep(
+        IProtoTypeClassifierResolver protoTypeClassifierResolver,
         IAssignmentGeneratorResolver assignmentGeneratorResolver,
         IMessageNameResolver messageNameResolver)
     {
+        this._protoTypeClassifierResolver = protoTypeClassifierResolver;
         this._assignmentGeneratorResolver = assignmentGeneratorResolver;
         this._messageNameResolver = messageNameResolver;
     }
@@ -47,11 +49,7 @@ internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenera
         {
             var targetPropertyAnnotation = property.Annotations.Get<CSharpPropertyAnnotation>();
             var sourcePropertyAnnotation = property.Annotations.Get<PropertyNameAnnotation>();
-
-            if (property.Name.Equals("ManagerInfo"))
-            {
-
-            }
+            var typeKind = this._protoTypeClassifierResolver.Classify(property);
 
             var assignmentContext =
                 new AssignmentGenerationContext
@@ -59,23 +57,32 @@ internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenera
                     Message = message,
                     Property = property,
                     SourceExpression = SyntaxFactory.IdentifierName("src"),
-
+                    TargetExpression =
+                        SyntaxFactory.IdentifierName(
+                            property.Annotations
+                                .Get<CSharpPropertyAnnotation>()?.Name
+                                ?? property.ProtoName),
                     SourcePropertyName =
                         sourcePropertyAnnotation?.Name
                         ?? property.ProtoName,
-
                     TargetPropertyName =
                         targetPropertyAnnotation?.Name
                         ?? property.ProtoName,
+                    TypeKind = typeKind,
                 };
 
-            var generator =
-                this._assignmentGeneratorResolver.Resolve(
-                    assignmentContext);
+            var generator = this._assignmentGeneratorResolver.Resolve(assignmentContext.TypeKind);
+
+            ExpressionSyntax value =
+                property.IsRepeated
+                    ? generator.GenerateRepeatedValue(assignmentContext)
+                    : generator.GenerateValue(assignmentContext);
 
             assignments.Add(
-                generator.Generate(
-                    assignmentContext));
+                SyntaxFactory.AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    assignmentContext.TargetExpression,
+                    value));
         }
 
         var objectCreation =

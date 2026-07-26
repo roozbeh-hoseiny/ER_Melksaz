@@ -7,4 +7,3 @@ internal sealed class GoogleProtobufMessagePackageAnnotation : MessagePackageAnn
 {
     public static readonly GoogleProtobufMessagePackageAnnotation Instance = new();
 }
-

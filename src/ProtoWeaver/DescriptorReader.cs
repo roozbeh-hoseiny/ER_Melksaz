@@ -99,35 +99,30 @@ public static class DescriptorReader
 
         foreach (var field in descriptor.Fields.InDeclarationOrder())
         {
+            if (field.Name.Equals("ordinal", StringComparison.InvariantCultureIgnoreCase))
+            {
+
+            }
             message.Properties.Add(
                 new ProtoProperty
                 {
+                    FieldDescriptor = field,
                     BaseMessage = message,
-
                     Name = ToPascalCase(field.Name),
-
                     ProtoName = field.Name,
-
                     FieldType = field.FieldType,
-
                     IsRepeated = field.IsRepeated,
-
                     IsNullable = field.HasPresence,
-
+                    IsRequired = field.IsRequired,
                     IsMessage = field.FieldType == FieldType.Message,
-
                     IsEnum = field.FieldType == FieldType.Enum,
-
                     IsPrimitive =
                         field.FieldType != FieldType.Message &&
                         field.FieldType != FieldType.Enum,
-
-
                     Message =
                         field.FieldType == FieldType.Message
                             ? model.Messages[field.MessageType.FullName]
                             : null,
-
                     EnumName =
                         field.FieldType == FieldType.Enum
                             ? field.EnumType.FullName

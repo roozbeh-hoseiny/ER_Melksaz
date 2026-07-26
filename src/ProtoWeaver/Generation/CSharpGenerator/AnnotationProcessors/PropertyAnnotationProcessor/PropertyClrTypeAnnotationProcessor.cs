@@ -17,6 +17,10 @@ internal sealed class PropertyClrTypeAnnotationProcessor : IProtoPropertyAnnotat
     }
     public void Process(ProtoProperty property, ProtoMessage message)
     {
+        if (property.Name.Equals("ordinal", StringComparison.InvariantCultureIgnoreCase))
+        {
+
+        }
         string clrTypeNameSpace = "";
         var cSharpPropertyAnnotation = property.Annotations.Get<CSharpPropertyAnnotation>();
 
@@ -54,6 +58,10 @@ internal sealed class PropertyClrTypeAnnotationProcessor : IProtoPropertyAnnotat
             typeName += "?";
         }
 
-        property.AddAnnotation(new PropertyClrTypeAnnotation() { ClrType = typeName, ClrTypeNamespace = clrTypeNameSpace });
+        property.AddAnnotation(new PropertyClrTypeAnnotation()
+        {
+            ClrType = typeName,
+            ClrTypeNamespace = clrTypeNameSpace
+        });
     }
 }
