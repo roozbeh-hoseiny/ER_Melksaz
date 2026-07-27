@@ -29,9 +29,9 @@ internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenera
         if (!message.CanCreateClass)
             return;
 
-        var messageType = message.Annotations.GetDerived<IMessageTypeBase>();
-
-        if (messageType is not ApiRequestMessageType)
+        if (
+            message.Annotations.Has<ApiResponseMessageType>()
+            || message.Annotations.Has<ApiReplyMessageType>())
             return;
 
         var messageDocumentKey = message.GetDocumentKey();
