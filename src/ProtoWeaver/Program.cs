@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProtoWeaver;
 using ProtoWeaver.Builder;
+using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator;
-using ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnnotationProcessors;
 using Serilog;
 try
 {

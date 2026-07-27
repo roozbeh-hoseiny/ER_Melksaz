@@ -1,4 +1,5 @@
-﻿using ProtoWeaver.Generation.Contracts;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator.Pipelines;
 using ProtoWeaver.Models;
 
@@ -11,19 +12,22 @@ internal sealed class ProtoWeaverGenerator
     private readonly MessageGenerationPipeline _messageGenerationPipeline;
     private readonly ServiceGenerationPipeline _serviceGenerationPipeline;
     private readonly IDocumentWriter _writer;
+    private readonly IServiceProvider _serviceProvider;
 
     public ProtoWeaverGenerator(
         ServiceAnnotationProcessorPipeline serviceAnnotationProcessorPipeline,
         MessageAnnotationProcessorPipeline messageAnnotationProcessorPipeline,
         MessageGenerationPipeline messageGenerationPipeline,
         ServiceGenerationPipeline serviceGenerationPipeline,
-        IDocumentWriter writer)
+        IDocumentWriter writer,
+        IServiceProvider serviceProvider)
     {
         this._serviceAnnotationProcessorPipeline = serviceAnnotationProcessorPipeline;
         this._messageAnnotationProcessorPipeline = messageAnnotationProcessorPipeline;
         this._messageGenerationPipeline = messageGenerationPipeline;
         this._serviceGenerationPipeline = serviceGenerationPipeline;
         this._writer = writer;
+        this._serviceProvider = serviceProvider;
     }
 
     public void Generate(ProtoModel model, string outputDirectory)
@@ -51,5 +55,14 @@ internal sealed class ProtoWeaverGenerator
         }
 
         this._writer.Write(context, outputDirectory);
+    }
+
+    public IReadOnlyCollection<(string Processor, int Order)> GetAnnotationProcessorsOrder()
+    {
+        var annotationProcessors = this._serviceProvider.GetRequiredService<IEnumerable<IProtoMessageAnnotationProcessor>>();
+        return annotationProcessors
+            .Select(ap => (ap.GetType().Name, ap.Order))
+            .OrderBy(x => x.Order)
+            .ToArray();
     }
 }

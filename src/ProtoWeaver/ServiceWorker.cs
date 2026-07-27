@@ -18,6 +18,11 @@ internal sealed class ServiceWorker : BackgroundService
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        foreach (var (processorName, order) in this._generator.GetAnnotationProcessorsOrder())
+        {
+            Console.WriteLine($"{order,3}:{processorName}");
+        }
+
         var assemblyPath = @"C:\works\PersonalWorks\Azure_Sanjesh\Sanjesh\src\Services\SchoolServices\ER.Sanjesh.School.ProtoContract\bin\Debug\netstandard2.1\ER.Sanjesh.School.ProtoContract.dll";
 
         var loader = new AssemblyLoader();

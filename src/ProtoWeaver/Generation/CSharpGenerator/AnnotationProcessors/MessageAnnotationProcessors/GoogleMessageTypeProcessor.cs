@@ -6,7 +6,7 @@ namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnn
 
 internal sealed class GoogleMessageTypeProcessor : IProtoMessageAnnotationProcessor
 {
-    public int Order => 1;
+    public int Order => 4;
 
     public void Process(ProtoMessage src)
     {

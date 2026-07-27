@@ -6,7 +6,7 @@ namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnn
 
 internal sealed class ApiRequestMessageTypeProcessor : IProtoMessageAnnotationProcessor
 {
-    public int Order => 3;
+    public int Order => 1;
 
     public void Process(ProtoMessage src)
     {

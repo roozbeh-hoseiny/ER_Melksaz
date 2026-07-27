@@ -34,3 +34,8 @@ public sealed class SharedMessageType : IMessageTypeBase
     public static readonly SharedMessageType Instance = new SharedMessageType();
     public string MessageTypeName => "Shared";
 }
+public sealed class DTOMessageType : IMessageTypeBase
+{
+    public static readonly DTOMessageType Instance = new DTOMessageType();
+    public string MessageTypeName => "DTO";
+}

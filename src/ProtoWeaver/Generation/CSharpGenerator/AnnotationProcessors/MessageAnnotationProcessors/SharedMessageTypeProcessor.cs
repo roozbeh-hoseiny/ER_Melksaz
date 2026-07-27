@@ -6,7 +6,7 @@ namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnn
 
 internal sealed class SharedMessageTypeProcessor : IProtoMessageAnnotationProcessor
 {
-    public int Order => 2;
+    public int Order => 5;
 
     public void Process(ProtoMessage src)
     {

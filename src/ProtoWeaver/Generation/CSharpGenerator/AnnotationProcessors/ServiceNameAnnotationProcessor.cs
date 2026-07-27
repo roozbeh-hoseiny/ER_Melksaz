@@ -4,7 +4,7 @@ using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors;
 
-internal sealed class ServiceNameProcessor :
+internal sealed class ServiceNameAnnotationProcessor :
     IProtoServiceAnnotationProcessor,
     IProtoMessageAnnotationProcessor
 

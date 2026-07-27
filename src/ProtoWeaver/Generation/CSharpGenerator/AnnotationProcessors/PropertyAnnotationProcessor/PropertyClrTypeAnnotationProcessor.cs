@@ -1,5 +1,4 @@
 ﻿using ProtoWeaver.Generation.Contracts;
-using ProtoWeaver.Generation.CSharpGenerator.AnnotationProcessors.MessageAnnotationProcessors;
 using ProtoWeaver.Generation.CSharpGenerator.Annotations;
 using ProtoWeaver.Models;
 
