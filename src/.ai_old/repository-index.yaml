@@ -1,0 +1,27 @@
+Architecture:
+  Style: Clean Architecture
+  Pattern: DDD
+  CQRS: true
+
+Domain:
+  AggregateRootBase: AggregateRoot
+  EntityBase: Entity
+  ValueObjectBase: ValueObject
+
+Persistence:
+  ORM: EF Core
+  Database: SQL Server
+
+Messaging: RabbitMQ
+
+API: MinimalApi
+
+Observability: OpenTelemetry Grafana Loki
+
+Testing: EnterpriseTestingFramework
+
+Result: OperationResult<T>
+
+Caching: FusionCache
+
+Serialization: System.Text.Json

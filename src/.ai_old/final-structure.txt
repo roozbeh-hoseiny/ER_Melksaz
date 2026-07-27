@@ -1,0 +1,138 @@
+.ai/
+│
+├── AGENTS.md
+├── README.md
+│
+├── architecture/
+│   ├── philosophy.md
+│   ├── clean-architecture.md
+│   ├── dependency-rules.md
+│   ├── module-rules.md
+│   ├── naming.md
+│   ├── folder-structure.md
+│   ├── namespaces.md
+│   ├── coding-style.md
+│   ├── error-handling.md
+│   ├── result-pattern.md
+│   ├── transaction-pipeline.md
+│   ├── dependency-injection.md
+│   ├── logging.md
+│   ├── telemetry.md
+│   ├── configuration.md
+│   └── security.md
+│
+├── ddd/
+│   ├── aggregates.md
+│   ├── entities.md
+│   ├── value-objects.md
+│   ├── domain-events.md
+│   ├── specifications.md
+│   ├── repositories.md
+│   ├── factories.md
+│   ├── domain-services.md
+│   ├── invariants.md
+│   └── anti-patterns.md
+│
+├── application/
+│   ├── commands.md
+│   ├── queries.md
+│   ├── handlers.md
+│   ├── validators.md
+│   ├── pipelines.md
+│   ├── authorization.md
+│   ├── caching.md
+│   ├── idempotency.md
+│   ├── mapping.md
+│   └── result-handling.md
+│
+├── infrastructure/
+│   ├── ef-core.md
+│   ├── repositories.md
+│   ├── sql-server.md
+│   ├── migrations.md
+│   ├── interceptors.md
+│   ├── outbox.md
+│   ├── rabbitmq.md
+│   ├── grpc.md
+│   ├── redis.md
+│   ├── fusioncache.md
+│   ├── docker.md
+│   └── observability.md
+│
+├── api/
+│   ├── minimal-api.md
+│   ├── grpc.md
+│   ├── endpoint-conventions.md
+│   ├── problem-details.md
+│   ├── openapi.md
+│   ├── versioning.md
+│   └── authentication.md
+│
+├── testing/
+│   ├── unit-tests.md
+│   ├── integration-tests.md
+│   ├── architecture-tests.md
+│   ├── testcontainers.md
+│   ├── builders.md
+│   ├── fixtures.md
+│   ├── assertions.md
+│   └── enterprise-testing-framework.md
+│
+├── recipes/
+│   ├── create-feature.md
+│   ├── create-module.md
+│   ├── create-aggregate.md
+│   ├── create-command.md
+│   ├── create-query.md
+│   ├── create-endpoint.md
+│   ├── create-grpc-service.md
+│   ├── create-event.md
+│   ├── refactor-feature.md
+│   └── migrate-feature.md
+│
+├── templates/
+│   ├── aggregate.md
+│   ├── entity.md
+│   ├── value-object.md
+│   ├── command.md
+│   ├── query.md
+│   ├── handler.md
+│   ├── endpoint.md
+│   ├── repository.md
+│   ├── validator.md
+│   ├── test.md
+│   └── module.md
+│
+├── prompts/
+│   ├── system-prompt.md
+│   ├── review-prompt.md
+│   ├── refactor-prompt.md
+│   ├── performance-review.md
+│   ├── security-review.md
+│   └── architecture-review.md
+│
+├── checklists/
+│   ├── feature.md
+│   ├── aggregate.md
+│   ├── command.md
+│   ├── endpoint.md
+│   ├── testing.md
+│   ├── release.md
+│   └── pull-request.md
+│
+├── anti-patterns/
+│   ├── domain.md
+│   ├── application.md
+│   ├── infrastructure.md
+│   ├── ef-core.md
+│   └── api.md
+│
+├── examples/
+│   ├── invoice/
+│   ├── customer/
+│   ├── identity/
+│   ├── permission/
+│   └── product/
+│
+├── glossary.md
+└── ai-manifest.md
