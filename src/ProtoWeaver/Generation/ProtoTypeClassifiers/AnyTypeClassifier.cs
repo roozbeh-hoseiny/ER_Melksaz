@@ -7,9 +7,7 @@ internal sealed class AnyTypeClassifier : IProtoTypeClassifier
 {
     public int Order => 40;
 
-    public bool TryClassify(
-        ProtoProperty property,
-        out ProtoTypeKind kind)
+    public bool TryClassify(ProtoProperty property, out ProtoTypeKind kind)
     {
         if (property.Message is null)
         {

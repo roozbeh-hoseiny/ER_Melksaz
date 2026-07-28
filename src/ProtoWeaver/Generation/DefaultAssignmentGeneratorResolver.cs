@@ -11,8 +11,7 @@ internal sealed class DefaultAssignmentGeneratorResolver : IAssignmentGeneratorR
         this._generators = generators.ToDictionary(x => x.Kind);
     }
 
-    public IAssignmentValueGenerator Resolve(
-        ProtoTypeKind kind)
+    public IAssignmentValueGenerator Resolve(ProtoTypeKind kind)
     {
         if (this._generators.TryGetValue(kind, out var generator))
         {

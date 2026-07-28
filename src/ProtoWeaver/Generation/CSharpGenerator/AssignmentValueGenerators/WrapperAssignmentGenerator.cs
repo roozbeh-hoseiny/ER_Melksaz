@@ -2,26 +2,19 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ProtoWeaver.Generation.Contracts;
 
-namespace ProtoWeaver.Generation.AssignmentValueGenerators;
+namespace ProtoWeaver.Generation.CSharpGenerator.AssignmentValueGenerators;
 
-internal sealed class TimestampAssignmentGenerator : IAssignmentValueGenerator
+internal sealed class WrapperAssignmentGenerator : IAssignmentValueGenerator
 {
-    public ProtoTypeKind Kind => ProtoTypeKind.Timestamp;
+    public ProtoTypeKind Kind => ProtoTypeKind.Wrapper;
 
     public ExpressionSyntax GenerateValue(AssignmentGenerationContext context)
     {
-        return SyntaxFactory.InvocationExpression(
-            SyntaxFactory.MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-
-                SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    context.SourceExpression,
-                    SyntaxFactory.IdentifierName(
-                        context.SourcePropertyName)),
-
-                SyntaxFactory.IdentifierName(
-                    "ToTimestamp")));
+        return SyntaxFactory.MemberAccessExpression(
+            SyntaxKind.SimpleMemberAccessExpression,
+            context.SourceExpression,
+            SyntaxFactory.IdentifierName(
+                context.SourcePropertyName));
     }
     public ExpressionSyntax GenerateRepeatedValue(AssignmentGenerationContext context)
     {

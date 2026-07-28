@@ -2,11 +2,11 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ProtoWeaver.Generation.Contracts;
 
-namespace ProtoWeaver.Generation.AssignmentValueGenerators;
+namespace ProtoWeaver.Generation.CSharpGenerator.AssignmentValueGenerators;
 
-internal sealed class WrapperAssignmentGenerator : IAssignmentValueGenerator
+internal sealed class PrimitiveAssignmentGenerator : IAssignmentValueGenerator
 {
-    public ProtoTypeKind Kind => ProtoTypeKind.Wrapper;
+    public ProtoTypeKind Kind => ProtoTypeKind.Primitive;
 
     public ExpressionSyntax GenerateValue(AssignmentGenerationContext context)
     {

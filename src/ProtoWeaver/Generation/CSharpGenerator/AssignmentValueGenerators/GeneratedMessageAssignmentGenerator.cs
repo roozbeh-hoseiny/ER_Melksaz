@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ProtoWeaver.Generation.Contracts;
 
-namespace ProtoWeaver.Generation.AssignmentValueGenerators;
+namespace ProtoWeaver.Generation.CSharpGenerator.AssignmentValueGenerators;
 
 internal sealed class GeneratedMessageAssignmentGenerator : IAssignmentValueGenerator
 {

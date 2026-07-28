@@ -7,9 +7,7 @@ internal sealed class EnumTypeClassifier : IProtoTypeClassifier
 {
     public int Order => 2;
 
-    public bool TryClassify(
-        ProtoProperty property,
-        out ProtoTypeKind kind)
+    public bool TryClassify(ProtoProperty property, out ProtoTypeKind kind)
     {
         if (!property.IsEnum)
         {

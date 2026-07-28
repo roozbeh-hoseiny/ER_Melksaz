@@ -1,6 +1,7 @@
 ﻿using ProtoWeaver.Generation.Contracts;
 using ProtoWeaver.Generation.CSharpGenerator;
 using ProtoWeaver.Generation.CSharpGenerator.Contracts;
+using ProtoWeaver.Models;
 
 namespace ProtoWeaver.Generation;
 
@@ -53,7 +54,7 @@ public sealed class GenerationContext
     {
         var document = this.Get(key);
 
-        return document.Builder as TBuilder
+        return document.GetBuilder<TBuilder>()
             ?? throw new InvalidOperationException(
                 $"Document '{key}' is not using '{typeof(TBuilder).Name}'.");
     }
@@ -70,9 +71,17 @@ public sealed class GenerationContext
 
         if (document is null) return false;
 
-        builder = document.Builder as TBuilder;
+        builder = document.GetBuilder<TBuilder>();
 
         return builder is not null;
+    }
+
+    public TBuilder GetBuilderOfMessage<TBuilder>(ProtoMessage message)
+        where TBuilder : class, ICSharpBuilder
+    {
+        var messageDocumentKey = message.GetDocumentKey();
+
+        return this.GetBuilder<TBuilder>(messageDocumentKey);
     }
 
     public TBuilder GetOrCreateDocumentBuilder<TBuilder>(

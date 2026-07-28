@@ -7,9 +7,7 @@ internal sealed class DurationTypeClassifier : IProtoTypeClassifier
 {
     public int Order => 30;
 
-    public bool TryClassify(
-        ProtoProperty property,
-        out ProtoTypeKind kind)
+    public bool TryClassify(ProtoProperty property, out ProtoTypeKind kind)
     {
         if (property.Message is null)
         {

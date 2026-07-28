@@ -26,19 +26,13 @@ internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenera
 
     public void Execute(ProtoMessage message, GenerationContext context)
     {
-        if (!message.CanCreateClass)
-            return;
+        if (!message.CanCreateClass || !message.HasMapToGrpcRequestMethid) return;
 
-        if (
-            message.Annotations.Has<ApiResponseMessageType>()
-            || message.Annotations.Has<ApiReplyMessageType>())
-            return;
-
-        var messageDocumentKey = message.GetDocumentKey();
-
-        var builder = context.GetBuilder<CSharpClassBuilder>(messageDocumentKey);
+        var builder = context.GetBuilderOfMessage<CSharpClassBuilder>(message);
 
         var apiType = this._messageNameResolver.GetOrCreate(message);
+
+        if (apiType is null) throw new InvalidOperationException($"Can not get or create message name of '{message.GetType()}'");
 
         var grpcType = message.FullName;
 
@@ -86,8 +80,7 @@ internal sealed class MessageApiRequestMapperGeneratorStep : IProtoMessageGenera
 
         var objectCreation =
             SyntaxFactory.ObjectCreationExpression(
-                    SyntaxFactory.ParseTypeName(
-                        grpcType))
+                    SyntaxFactory.ParseTypeName(grpcType))
                 .WithInitializer(
                     SyntaxFactory.InitializerExpression(
                         SyntaxKind.ObjectInitializerExpression,

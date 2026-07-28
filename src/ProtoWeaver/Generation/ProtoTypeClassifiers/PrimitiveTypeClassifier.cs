@@ -7,9 +7,7 @@ internal sealed class PrimitiveTypeClassifier : IProtoTypeClassifier
 {
     public int Order => 1000;
 
-    public bool TryClassify(
-        ProtoProperty property,
-        out ProtoTypeKind kind)
+    public bool TryClassify(ProtoProperty property, out ProtoTypeKind kind)
     {
         if (property.Message is not null)
         {
