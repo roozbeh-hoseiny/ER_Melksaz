@@ -32,6 +32,10 @@
   <Folder Name="/src/Core/Security/">
     <Project Path="Core/Security/ER.Melksaz.Security.Encryption/ER.Melksaz.Security.Encryption.csproj" Id="754f6d1c-434e-486f-80f9-0eae0f95763d" />
   </Folder>
+  <Folder Name="/src/DynamicQuery/">
+    <Project Path="DQ.Core/DQ.Core.csproj" Id="48cb3d6c-dd16-44e9-8900-9d2b6445120b" />
+    <Project Path="DynamicQuery/DQ.Abstraction/DQ.Abstraction.csproj" Id="6dbadd29-7d99-4b84-bbaa-51802aa980e1" />
+  </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Identity/">
     <Project Path="Modules/IdentityModule/ER.Melksaz.Modules.IdentityModule.Api/ER.Melksaz.Modules.IdentityModule.Api.csproj" Id="477cea1e-3fb1-497c-9070-d4cf69f4ec59" />
