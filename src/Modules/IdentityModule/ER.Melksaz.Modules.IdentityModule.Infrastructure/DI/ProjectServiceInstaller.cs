@@ -9,6 +9,7 @@ using ER.Melksaz.BuildingBlocks.Persistence.EFAccess.Helpers;
 using ER.Melksaz.BuildingBlocks.Persistence.EFAccess.Interceptors;
 using ER.Melksaz.Modules.IdentityModule.Application.Persistence;
 using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence;
+using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence.Configurations.WriteConfigurations;
 using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence.DbContexts;
 using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence.Repositories;
 using ER.Melksaz.Security.Encryption;
@@ -96,6 +97,8 @@ internal static class ProjectServiceCollectionExtension
         _ = services.AddSingleton<IDbErrorResolver, DbErrorResolverDefault>();
 
         _ = services.AddScoped<IInterceptor, HashShadowPropertiesInterceptor>();
+        _ = services.AddScoped<IInterceptor, AccountLedgerMaterializationInterceptor>();
+        _ = services.AddScoped<IInterceptor, AccountLedgerSaveInterceptor>();
 
         _ = services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
 

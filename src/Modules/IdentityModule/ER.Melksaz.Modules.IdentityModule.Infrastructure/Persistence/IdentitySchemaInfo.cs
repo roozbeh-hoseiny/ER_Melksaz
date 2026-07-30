@@ -7,9 +7,11 @@ internal sealed class IdentitySchemaInfo : SchemaInfoBase
     public static readonly IdentitySchemaInfo Instance = new();
 
     public string Users_TableName => "Users";
+    public string AccountsLedger_TableName => "AccountsLedger";
     public string Users_MobileHash_ColumnName => "Mobile_Hash";
     public string Users_EmailHash_ColumnName => "Email_Hash";
     public string Users_NationalCodeHash_ColumnName => "NationalCode_Hash";
+    public string AccountsLedger_AccountLevel_ColumnName => "AccountLevel";
 
     public const string Users_Mobile_UniqueIndexName = "IX_Users_MobileHash_Unique";
     public const string Users_Email_UniqueIndexName = "IX_Users_EmailHash_Unique";

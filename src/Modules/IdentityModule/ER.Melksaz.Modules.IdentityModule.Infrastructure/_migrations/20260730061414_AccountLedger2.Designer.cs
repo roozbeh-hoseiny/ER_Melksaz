@@ -5,6 +5,7 @@ using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,9 +13,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ER.Melksaz.Modules.IdentityModule.Infrastructure._migrations
 {
     [DbContext(typeof(IdentityWriteDbContext))]
-    partial class IdentityWriteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260730061414_AccountLedger2")]
+    partial class AccountLedger2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,33 +68,10 @@ namespace ER.Melksaz.Modules.IdentityModule.Infrastructure._migrations
 
                     b.Property<string>("AccountLevel")
                         .IsRequired()
-                        .HasColumnType("Varchar(50)")
-                        .HasColumnName("AccountLevel");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("Code");
-
-                    b.Property<string>("GeneralCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("GeneralCode");
-
-                    b.Property<string>("GroupCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("GroupCode");
+                        .HasColumnType("Varchar(50)");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
-
-                    b.Property<string>("SubsidiaryCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("SubsidiaryCode");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -100,9 +80,6 @@ namespace ER.Melksaz.Modules.IdentityModule.Infrastructure._migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
 
                     b.ToTable("AccountsLedger", "Identity");
                 });

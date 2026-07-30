@@ -5,6 +5,7 @@ using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,9 +13,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ER.Melksaz.Modules.IdentityModule.Infrastructure._migrations
 {
     [DbContext(typeof(IdentityWriteDbContext))]
-    partial class IdentityWriteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260730080639_AccountLedger3")]
+    partial class AccountLedger3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

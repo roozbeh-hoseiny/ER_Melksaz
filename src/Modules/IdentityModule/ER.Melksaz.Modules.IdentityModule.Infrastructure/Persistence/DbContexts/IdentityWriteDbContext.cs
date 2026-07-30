@@ -3,6 +3,7 @@ using ER.Melksaz.BuildingBlocks.Persistence.EFAccess;
 using ER.Melksaz.BuildingBlocks.Persistence.EFAccess.Configurations;
 using ER.Melksaz.BuildingBlocks.Persistence.EFAccess.Helpers;
 using ER.Melksaz.BuildingBlocks.Persistence.Models;
+using ER.Melksaz.Modules.IdentityModule.Domain.Aggregates.AccountAggregate;
 using ER.Melksaz.Modules.IdentityModule.Domain.Aggregates.UserAggregate;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ internal sealed class IdentityWriteDbContext : SchemaBasedDbContextBase<Identity
     protected override DbConnectionMode Mode => DbConnectionMode.ReadWrite;
 
     public DbSet<User> Users => this.Set<User>();
+    public DbSet<AccountLedger> AccountLedgers => this.Set<AccountLedger>();
     public DbSet<OutboxMessage> OutboxMessages => this.Set<OutboxMessage>();
 
     public IdentityWriteDbContext(

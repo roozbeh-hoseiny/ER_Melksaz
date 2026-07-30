@@ -1,6 +1,7 @@
 using ER.Melksaz.ConfigProvider.SqlProvider.Persistance.ValueObjects;
 using ER.Melksaz.Hosting;
 using ER.Melksaz.Modules.IdentityModule.Api;
+using ER.Melksaz.Modules.IdentityModule.Infrastructure.Persistence;
 using JasperFx;
 using JasperFx.CodeGeneration;
 using Marten;
@@ -84,6 +85,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseExceptionHandler();
 
+
+await IdentityMigrator.MigrateAsync(app.Services, default);
 // Route command-line args so `dotnet run -- codegen write` (and `codegen delete`, `check-env`,
 // `describe`, …) work; with no args this just runs the web host.
 return await app.RunJasperFxCommands(args);
