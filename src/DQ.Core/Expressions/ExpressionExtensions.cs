@@ -10,14 +10,12 @@ public static class ExpressionExtensions
     {
         var parameter = Expression.Parameter(typeof(T), "x");
 
-        var leftBody =
-            ExpressionParameterReplacer.Replace(
+        var leftBody = ExpressionParameterReplacer.Replace(
                 left.Body,
                 left.Parameters[0],
                 parameter);
 
-        var rightBody =
-            ExpressionParameterReplacer.Replace(
+        var rightBody = ExpressionParameterReplacer.Replace(
                 right.Body,
                 right.Parameters[0],
                 parameter);
@@ -33,14 +31,12 @@ public static class ExpressionExtensions
     {
         var parameter = Expression.Parameter(typeof(T), "x");
 
-        var leftBody =
-            ExpressionParameterReplacer.Replace(
+        var leftBody = ExpressionParameterReplacer.Replace(
                 left.Body,
                 left.Parameters[0],
                 parameter);
 
-        var rightBody =
-            ExpressionParameterReplacer.Replace(
+        var rightBody = ExpressionParameterReplacer.Replace(
                 right.Body,
                 right.Parameters[0],
                 parameter);
@@ -54,8 +50,7 @@ public static class ExpressionExtensions
     {
         var parameter = Expression.Parameter(typeof(T), "x");
 
-        var body =
-            ExpressionParameterReplacer.Replace(
+        var body = ExpressionParameterReplacer.Replace(
                 expression.Body,
                 expression.Parameters[0],
                 parameter);
