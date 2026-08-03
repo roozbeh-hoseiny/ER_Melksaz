@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides factory methods for creating specification builders.
 /// </summary>
-public static class SpecificationBuilderExtensions
+public static class Specification
 {
     /// <summary>
     /// Creates a new specification builder.

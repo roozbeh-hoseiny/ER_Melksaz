@@ -1,31 +1,101 @@
 ﻿using DQ.Abstraction.Specifications;
+using DQ.Core.Specifications.Models;
 using System.Linq.Expressions;
 
 namespace DQ.Core.Specifications;
 
 /// <summary>
-/// Represents the base implementation of a strongly typed specification.
-///
-/// <para>
-/// A specification encapsulates a reusable business rule expressed as a LINQ
-/// predicate. Specifications can be combined using logical operators to
-/// construct more complex queries without duplicating filtering logic.
-/// </para>
-///
-/// <para>
-/// This class is immutable. Every logical composition creates a new
-/// specification instance and never modifies existing ones.
-/// </para>
+/// Base implementation of a specification.
 /// </summary>
 /// <typeparam name="TEntity">
-/// The entity type to which the specification applies.
+/// The entity type.
 /// </typeparam>
 public abstract class Specification<TEntity> : ISpecification<TEntity>
 {
+    #region Fields
+
+    private readonly SpecificationState<TEntity> _state;
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
-    /// Gets the filtering criteria represented by this specification.
+    /// Initializes a new instance of the
+    /// <see cref="Specification{TEntity}"/> class.
     /// </summary>
-    public abstract Expression<Func<TEntity, bool>>? Criteria { get; }
+    protected Specification()
+    {
+        this._state = new SpecificationState<TEntity>();
+    }
+
+
+    /// <summary>
+    /// Initializes a new instance from an existing state.
+    /// </summary>
+    protected Specification(SpecificationState<TEntity> state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+
+        this._state = state;
+    }
+
+    #endregion
+
+    #region Properties
+
+    /// <inheritdoc />
+    public virtual Expression<Func<TEntity, bool>>? Criteria
+        => this._state.Criteria;
+
+
+    /// <inheritdoc />
+    public IReadOnlyList<LambdaExpression> Includes
+        => this._state.Includes
+            .Select(x => x.Expression)
+            .Cast<LambdaExpression>()
+            .ToArray();
+
+
+    /// <inheritdoc />
+    public IReadOnlyList<LambdaExpression> Orders
+        => this._state.Orders
+            .Select(x => x.Expression)
+            .ToArray();
+
+
+    /// <inheritdoc />
+    public bool AsNoTracking
+        => this._state.AsNoTracking;
+
+
+    /// <inheritdoc />
+    public bool AsSplitQuery
+        => this._state.AsSplitQuery;
+
+
+    /// <inheritdoc />
+    public int? Skip
+        => this._state.Skip;
+
+
+    /// <inheritdoc />
+    public int? Take
+        => this._state.Take;
+
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    /// Gets the internal state of this specification.
+    /// </summary>
+    internal SpecificationState<TEntity> GetState()
+    {
+        return this._state;
+    }
+
+    #endregion
 
     /// <summary>
     /// Combines the current specification with another specification using
@@ -72,3 +142,4 @@ public abstract class Specification<TEntity> : ISpecification<TEntity>
         return new NotSpecification<TEntity>(this);
     }
 }
+

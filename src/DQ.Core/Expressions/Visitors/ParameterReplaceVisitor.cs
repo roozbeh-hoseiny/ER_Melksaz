@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace DQ.Core.Expressions;
+namespace DQ.Core.Expressions.Visitors;
 
 internal sealed class ParameterReplaceVisitor : ExpressionVisitor
 {

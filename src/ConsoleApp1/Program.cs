@@ -37,4 +37,47 @@ IHostBuilder CreateHostBuilder(string[] args) =>
                 hostBuilderContext.Configuration,
                 hostBuilderContext.HostingEnvironment,
                 SampleApplicationAssemblyReference.Assembly);
+
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, SlackService>();
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, SmsService>();
+            //services.AddScoped<INotificationService, EmailService>();
+
+            //services.TryAddScoped<INotificationService, SmsService>();
+            //services.TryAddScoped<INotificationService, SmsService>();
+            //services.TryAddScoped<INotificationService, SmsService>();
+            //services.TryAddScoped<INotificationService, SmsService>();
+            //services.TryAddScoped<INotificationService, SmsService>();
+            //services.TryAddScoped<INotificationService, SlackService>();
+            //services.TryAddScoped<INotificationService, SlackService>();
+            //services.TryAddScoped<INotificationService, SlackService>();
+            //services.TryAddScoped<INotificationService, SlackService>();
+            //services.TryAddScoped<INotificationService, SlackService>();
+            //services.TryAddScoped<INotificationService, SlackService>();
+            //services.TryAddScoped<INotificationService, EmailService>();
+            //services.TryAddScoped<INotificationService, EmailService>();
+            //services.TryAddScoped<INotificationService, EmailService>();
+            //services.TryAddScoped<INotificationService, EmailService>();
+            //services.TryAddScoped<INotificationService, EmailService>();
+            //services.TryAddScoped<INotificationService, EmailService>();
+
+
+            //services.TryAddEnumerable(
+            //    ServiceDescriptor.Describe(typeof(INotificationService), typeof(SmsService), ServiceLifetime.Scoped));
+
+            //services.TryAddEnumerable(
+            //    ServiceDescriptor.Describe(typeof(INotificationService), typeof(SmsService), ServiceLifetime.Scoped));
+
+            //services.TryAddEnumerable(
+            //    ServiceDescriptor.Describe(typeof(INotificationService), typeof(SlackService), ServiceLifetime.Scoped));
+
+            //services.TryAddEnumerable(
+            //    ServiceDescriptor.Describe(typeof(INotificationService), typeof(EmailService), ServiceLifetime.Scoped));
+
         });

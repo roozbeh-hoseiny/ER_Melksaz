@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using DQ.Core.Expressions.Visitors;
+using System.Linq.Expressions;
 
 namespace DQ.Core.Expressions;
 
@@ -9,8 +10,7 @@ public static class ExpressionParameterReplacer
         ParameterExpression source,
         ParameterExpression target)
     {
-        var visitor =
-            new ParameterReplaceVisitor(
+        var visitor = new ParameterReplaceVisitor(
                 new Dictionary<ParameterExpression, ParameterExpression>
                 {
                     [source] = target
