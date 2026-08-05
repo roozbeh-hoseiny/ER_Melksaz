@@ -10,4 +10,6 @@ public sealed record SpecificationState<TEntity>
     public bool AsSplitQuery { get; init; }
     public int? Skip { get; init; }
     public int? Take { get; init; }
+
+    public object? Projection { get; init; }
 }

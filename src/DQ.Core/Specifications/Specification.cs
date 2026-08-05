@@ -16,6 +16,7 @@ public abstract class Specification<TEntity> : ISpecification<TEntity>
     public int? Skip => this._state.Skip;
     public int? Take => this._state.Take;
 
+    public object? Projection => this._state.Projection;
 
     protected Specification(SpecificationState<TEntity> state)
     {

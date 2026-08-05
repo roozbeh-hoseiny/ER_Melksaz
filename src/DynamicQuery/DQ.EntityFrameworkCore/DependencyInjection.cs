@@ -1,4 +1,5 @@
 ﻿using DQ.EntityFrameworkCore.Evaluators;
+using DQ.EntityFrameworkCore.Projections;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DQ.EntityFrameworkCore;
@@ -17,6 +18,8 @@ public static class DependencyInjection
         services.AddScoped<ISpecificationPartEvaluator, PagingEvaluator>();
         services.AddScoped<ISpecificationPartEvaluator, AsNoTrackingEvaluator>();
         services.AddScoped<ISpecificationPartEvaluator, AsNoTrackingWithIdentityResolutionEvaluator>();
+
+        services.AddScoped<ProjectionMetadataResolver>();
 
         return services;
     }

@@ -1,4 +1,5 @@
 ﻿using DQ.Abstraction.Specifications.Models;
+using DQ.Core.Projections;
 using System.Linq.Expressions;
 
 namespace DQ.Core.Specifications.Buidlers;
@@ -148,7 +149,6 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-
     public SpecificationBuilder<TEntity> AsTracking()
     {
         this._state = this._state with
@@ -160,6 +160,29 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
+    public SpecificationBuilder<TEntity> Select<TProjection>(Expression<Func<TEntity, TProjection>> expression)
+    {
+        ArgumentNullException.ThrowIfNull(expression);
+
+        this._state =
+            this._state with
+            {
+                Projection = expression
+            };
+
+        return this;
+    }
+    public SpecificationBuilder<TEntity> Select<TProjection>(ProjectionDefinition<TEntity, TProjection> definition)
+    {
+        this._state =
+            this._state with
+            {
+                Projection = definition
+            };
+
+
+        return this;
+    }
 
     public Specification<TEntity> Build()
     {

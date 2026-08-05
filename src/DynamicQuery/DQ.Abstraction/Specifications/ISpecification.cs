@@ -12,4 +12,6 @@ public interface ISpecification<TEntity>
     bool AsSplitQuery { get; }
     int? Skip { get; }
     int? Take { get; }
+
+    object? Projection { get; }
 }
