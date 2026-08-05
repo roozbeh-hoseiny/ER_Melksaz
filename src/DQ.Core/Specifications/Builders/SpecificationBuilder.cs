@@ -49,8 +49,6 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-
-
     public SpecificationBuilder<TEntity> Include(string navigationPath)
     {
         this._state = this._state with

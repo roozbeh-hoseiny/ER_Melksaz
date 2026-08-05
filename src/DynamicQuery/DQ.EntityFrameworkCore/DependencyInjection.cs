@@ -12,11 +12,11 @@ public static class DependencyInjection
 
         services.AddScoped<ISpecificationPartEvaluator, CriteriaEvaluator>();
         services.AddScoped<ISpecificationPartEvaluator, IncludeEvaluator>();
+        services.AddScoped<ISpecificationPartEvaluator, SplitQueryEvaluator>();
         services.AddScoped<ISpecificationPartEvaluator, OrderEvaluator>();
         services.AddScoped<ISpecificationPartEvaluator, PagingEvaluator>();
         services.AddScoped<ISpecificationPartEvaluator, AsNoTrackingEvaluator>();
         services.AddScoped<ISpecificationPartEvaluator, AsNoTrackingWithIdentityResolutionEvaluator>();
-        services.AddScoped<ISpecificationPartEvaluator, SplitQueryEvaluator>();
 
         return services;
     }
