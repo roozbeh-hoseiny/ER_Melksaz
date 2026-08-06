@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Specifications\Builders\SpecificationBuilder_Old.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DynamicQuery\DQ.Abstraction\DQ.Abstraction.csproj" />
   </ItemGroup>
 

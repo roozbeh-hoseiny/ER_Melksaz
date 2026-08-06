@@ -1,9 +1,9 @@
-﻿namespace DQ.Core.Specifications.Buidlers;
+﻿namespace DQ.Core.Specifications;
 
 /// <summary>
 /// Provides factory methods for creating specification builders.
 /// </summary>
-public static class Specification
+public static class SpecificationFactory
 {
     /// <summary>
     /// Creates a new specification builder.

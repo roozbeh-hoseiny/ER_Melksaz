@@ -1,5 +1,5 @@
 ﻿using DQ.Abstraction.Specifications;
-using DQ.Core.Specifications.Buidlers;
+using DQ.Core.Specifications;
 
 namespace DQ.EntityFrameworkCore.Evaluators;
 

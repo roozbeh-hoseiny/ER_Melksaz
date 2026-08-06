@@ -1,7 +1,7 @@
 ﻿using DQ.Abstraction.Specifications.Models;
 using System.Linq.Expressions;
 
-namespace DQ.Core.Specifications.Buidlers;
+namespace DQ.Core.Specifications;
 
 public static class CriteriaExpressionBuilder<TEntity>
 {

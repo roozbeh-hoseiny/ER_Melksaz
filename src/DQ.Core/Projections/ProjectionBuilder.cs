@@ -1,73 +1,11 @@
 ﻿namespace DQ.Core.Projections;
 
-/*
-    هدف:
-    
-    ورودی:
-    [
-        "Id",
-        "Name",
-        "Orders.Id",
-        "Orders.Amount"
-    ]
-    
-    خروجی:
-    ProjectionRootNode
-     |
-     +-- Id
-     +-- Name
-     +-- Orders
-           |
-           +-- Id
-           +-- Amount
-
-    مثال استفاده:
-
-    var definition =
-        new ProjectionBuilder<Customer>()
-            .Include("Id")
-            .Include("Name", "DisplayName")
-            .Include("Orders.Id")
-            .Include("Orders.Amount")
-            .Build<CustomerDto>();
-
-
-    var expression =
-        projectionExpressionBuilder
-            .Build(definition);
-
-
-    var query =
-        db.Customers
-          .Select(expression);
-
-    خروجی Expression:
-
-    x => new CustomerDto
-    {
-        Id = x.Id,
-
-        DisplayName = x.Name,
-
-        Orders =
-            x.Orders
-              .Select(item => new OrderDto
-              {
-                  Id = item.Id,
-                  Amount = item.Amount
-              })
-              .ToList()
-    }
-    
- */
-public sealed class ProjectionBuilder<TEntity>
+public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
 {
     private readonly List<ProjectionMember> _members = [];
 
-    public ProjectionBuilder<TEntity> Include(string propertyName) => this.Include(propertyName, propertyName);
-
-
-    public ProjectionBuilder<TEntity> Include(string sourceProperty, string targetProperty)
+    public IProjectionBuilder<TEntity> Include(string propertyName) => this.Include(propertyName, propertyName);
+    public IProjectionBuilder<TEntity> Include(string sourceProperty, string targetProperty)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(sourceProperty);
         ArgumentException.ThrowIfNullOrWhiteSpace(targetProperty);
@@ -89,7 +27,6 @@ public sealed class ProjectionBuilder<TEntity>
         return new ProjectionDefinition<TEntity, TProjection>(
             root);
     }
-
 
     private IReadOnlyList<ProjectionNode> BuildNodes()
     {
@@ -116,8 +53,6 @@ public sealed class ProjectionBuilder<TEntity>
 
         return root.Values.ToList();
     }
-
-
     private void AddPath(
         IDictionary<string, ProjectionNode> nodes,
         string[] segments,

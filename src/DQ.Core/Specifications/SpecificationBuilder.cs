@@ -1,10 +1,11 @@
-﻿using DQ.Abstraction.Specifications.Models;
+﻿using DQ.Abstraction.Specifications;
+using DQ.Abstraction.Specifications.Models;
 using DQ.Core.Projections;
 using System.Linq.Expressions;
 
-namespace DQ.Core.Specifications.Buidlers;
+namespace DQ.Core.Specifications;
 
-public sealed class SpecificationBuilder<TEntity>
+public sealed class SpecificationBuilder<TEntity> : ISpecificationBuilder<TEntity>
 {
     private SpecificationState<TEntity> _state;
 
@@ -13,7 +14,7 @@ public sealed class SpecificationBuilder<TEntity>
         this._state = new SpecificationState<TEntity>();
     }
 
-    public SpecificationBuilder<TEntity> Where(Expression<Func<TEntity, bool>> expression)
+    public ISpecificationBuilder<TEntity> Where(Expression<Func<TEntity, bool>> expression)
     {
         ArgumentNullException.ThrowIfNull(expression);
 
@@ -25,17 +26,17 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-    public SpecificationBuilder<TEntity> And(Expression<Func<TEntity, bool>> expression)
+    public ISpecificationBuilder<TEntity> And(Expression<Func<TEntity, bool>> expression)
     {
         return this.Combine(new CriteriaExpressionNode<TEntity>(expression), CriteriaGroupOperator.And);
     }
 
-    public SpecificationBuilder<TEntity> Or(Expression<Func<TEntity, bool>> expression)
+    public ISpecificationBuilder<TEntity> Or(Expression<Func<TEntity, bool>> expression)
     {
         return this.Combine(new CriteriaExpressionNode<TEntity>(expression), CriteriaGroupOperator.Or);
     }
 
-    public SpecificationBuilder<TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> expression)
+    public ISpecificationBuilder<TEntity> Include<TProperty>(Expression<Func<TEntity, TProperty>> expression)
     {
         this._state = this._state with
         {
@@ -50,7 +51,7 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-    public SpecificationBuilder<TEntity> Include(string navigationPath)
+    public ISpecificationBuilder<TEntity> Include(string navigationPath)
     {
         this._state = this._state with
         {
@@ -65,7 +66,7 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-    public SpecificationBuilder<TEntity> OrderBy<TKey>(Expression<Func<TEntity, TKey>> expression)
+    public ISpecificationBuilder<TEntity> OrderBy<TKey>(Expression<Func<TEntity, TKey>> expression)
     {
         this._state = this._state with
         {
@@ -81,7 +82,7 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-    public SpecificationBuilder<TEntity> OrderByDescending<TKey>(Expression<Func<TEntity, TKey>> expression)
+    public ISpecificationBuilder<TEntity> OrderByDescending<TKey>(Expression<Func<TEntity, TKey>> expression)
     {
         this._state = this._state with
         {
@@ -97,7 +98,7 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-    public SpecificationBuilder<TEntity> Skip(int value)
+    public ISpecificationBuilder<TEntity> Skip(int value)
     {
         this._state = this._state with
         {
@@ -107,7 +108,7 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-    public SpecificationBuilder<TEntity> Take(int value)
+    public ISpecificationBuilder<TEntity> Take(int value)
     {
         this._state = this._state with
         {
@@ -117,7 +118,7 @@ public sealed class SpecificationBuilder<TEntity>
         return this;
     }
 
-    public SpecificationBuilder<TEntity> AsSplitQuery()
+    public ISpecificationBuilder<TEntity> AsSplitQuery()
     {
         this._state = this._state with
         {
@@ -126,8 +127,7 @@ public sealed class SpecificationBuilder<TEntity>
 
         return this;
     }
-
-    public SpecificationBuilder<TEntity> AsNoTracking()
+    public ISpecificationBuilder<TEntity> AsNoTracking()
     {
         this._state = this._state with
         {
@@ -137,8 +137,7 @@ public sealed class SpecificationBuilder<TEntity>
 
         return this;
     }
-
-    public SpecificationBuilder<TEntity> AsNoTrackingWithIdentityResolution()
+    public ISpecificationBuilder<TEntity> AsNoTrackingWithIdentityResolution()
     {
         this._state = this._state with
         {
@@ -148,8 +147,7 @@ public sealed class SpecificationBuilder<TEntity>
 
         return this;
     }
-
-    public SpecificationBuilder<TEntity> AsTracking()
+    public ISpecificationBuilder<TEntity> AsTracking()
     {
         this._state = this._state with
         {
@@ -159,8 +157,7 @@ public sealed class SpecificationBuilder<TEntity>
 
         return this;
     }
-
-    public SpecificationBuilder<TEntity> Select<TProjection>(Expression<Func<TEntity, TProjection>> expression)
+    public ISpecificationBuilder<TEntity> Select<TProjection>(Expression<Func<TEntity, TProjection>> expression)
     {
         ArgumentNullException.ThrowIfNull(expression);
 
@@ -172,24 +169,22 @@ public sealed class SpecificationBuilder<TEntity>
 
         return this;
     }
-    public SpecificationBuilder<TEntity> Select<TProjection>(ProjectionDefinition<TEntity, TProjection> definition)
+    public ISpecificationBuilder<TEntity> Select<TProjection>(ProjectionDefinition<TEntity, TProjection> definition)
     {
         this._state =
             this._state with
             {
                 Projection = definition
             };
-
-
         return this;
     }
 
-    public Specification<TEntity> Build()
+    public ISpecification<TEntity> Build()
     {
         return new BuiltSpecification<TEntity>(this._state);
     }
 
-    private SpecificationBuilder<TEntity> Combine(
+    private ISpecificationBuilder<TEntity> Combine(
         CriteriaNode<TEntity> node,
         CriteriaGroupOperator @operator)
     {

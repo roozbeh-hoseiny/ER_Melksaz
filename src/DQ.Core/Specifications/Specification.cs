@@ -15,10 +15,11 @@ public abstract class Specification<TEntity> : ISpecification<TEntity>
     public bool AsSplitQuery => this._state.AsSplitQuery;
     public int? Skip => this._state.Skip;
     public int? Take => this._state.Take;
-
     public object? Projection => this._state.Projection;
 
-    protected Specification(SpecificationState<TEntity> state)
+
+    public Specification(
+        SpecificationState<TEntity> state)
     {
         ArgumentNullException.ThrowIfNull(state);
 
