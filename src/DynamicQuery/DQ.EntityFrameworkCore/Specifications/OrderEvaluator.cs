@@ -2,7 +2,7 @@
 using DQ.Abstraction.Specifications.Models;
 using System.Linq.Expressions;
 
-namespace DQ.EntityFrameworkCore.Evaluators;
+namespace DQ.EntityFrameworkCore.Specifications;
 
 public sealed class OrderEvaluator : ISpecificationPartEvaluator
 {

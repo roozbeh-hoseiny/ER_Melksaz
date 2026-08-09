@@ -1,4 +1,6 @@
-﻿namespace DQ.Core.Projections;
+﻿using DQ.Abstraction.Projections.Models;
+
+namespace DQ.Core.Projections;
 
 public sealed class ProjectionDefinition<TEntity, TProjection>
 {
@@ -13,6 +15,4 @@ public sealed class ProjectionDefinition<TEntity, TProjection>
 
         this.Root = root;
     }
-
-
 }

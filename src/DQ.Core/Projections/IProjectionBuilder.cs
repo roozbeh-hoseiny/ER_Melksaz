@@ -1,4 +1,6 @@
-﻿namespace DQ.Core.Projections;
+﻿using DQ.Abstraction.Projections;
+
+namespace DQ.Core.Projections;
 
 /*
     هدف:
@@ -64,5 +66,5 @@ public interface IProjectionBuilder<TEntity>
 {
     IProjectionBuilder<TEntity> Include(string propertyName);
     IProjectionBuilder<TEntity> Include(string sourceProperty, string targetProperty);
-    ProjectionDefinition<TEntity, TProjection> Build<TProjection>();
+    IProjection<TEntity, TProjection> Build<TProjection>();
 }

@@ -1,4 +1,4 @@
-﻿namespace DQ.Core.Projections;
+﻿namespace DQ.Abstraction.Projections.Models;
 
 public abstract record ProjectionNode;
 public sealed record ProjectionPropertyNode(ProjectionMember Member) : ProjectionNode;

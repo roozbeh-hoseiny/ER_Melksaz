@@ -1,6 +1,6 @@
 ﻿using DQ.Abstraction.Specifications;
 
-namespace DQ.EntityFrameworkCore.Evaluators;
+namespace DQ.EntityFrameworkCore.Specifications;
 
 public sealed class SpecificationEvaluator : ISpecificationEvaluator
 {

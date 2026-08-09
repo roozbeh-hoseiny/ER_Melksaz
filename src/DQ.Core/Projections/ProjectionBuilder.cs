@@ -1,4 +1,7 @@
-﻿namespace DQ.Core.Projections;
+﻿using DQ.Abstraction.Projections;
+using DQ.Abstraction.Projections.Models;
+
+namespace DQ.Core.Projections;
 
 public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
 {
@@ -18,15 +21,18 @@ public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
         return this;
     }
 
-    public ProjectionDefinition<TEntity, TProjection> Build<TProjection>()
-    {
-        var root =
-            new ProjectionRootNode(
-                this.BuildNodes());
 
-        return new ProjectionDefinition<TEntity, TProjection>(
-            root);
+    public IProjection<TEntity, TProjection> Build<TProjection>()
+    {
+        var nodes = this.BuildNodes();
+
+        var definition = new
+            ProjectionDefinition<TEntity, TProjection>(
+                new ProjectionRootNode(nodes));
+
+        return new BuiltProjection<TProjection>(definition);
     }
+
 
     private IReadOnlyList<ProjectionNode> BuildNodes()
     {
@@ -41,6 +47,12 @@ public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
                 member.SourceName.Split(
                     '.',
                     StringSplitOptions.RemoveEmptyEntries);
+
+
+            if (segments.Length == 0)
+            {
+                continue;
+            }
 
 
             this.AddPath(
@@ -82,33 +94,24 @@ public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
                     new ProjectionMember(
                         current,
                         current),
-                    Array.Empty<ProjectionNode>());
+                    []);
+
 
             nodes[current] = existing;
         }
 
 
-        if (existing is not ProjectionNavigationNode collection)
+        if (existing is not ProjectionNavigationNode navigation)
         {
             throw new InvalidOperationException(
-                $"Projection path conflict on '{current}'.");
+                $"Projection path conflict on '{string.Join(".", segments)}'.");
         }
 
 
         var children =
-            collection.Children
-                .ToDictionary(
-                    x => x switch
-                    {
-                        ProjectionPropertyNode p
-                            => p.Member.SourceName,
-
-                        ProjectionNavigationNode c
-                            => c.Member.SourceName,
-
-                        _ => string.Empty
-                    },
-                    StringComparer.OrdinalIgnoreCase);
+            navigation.Children.ToDictionary(
+                GetNodeName,
+                StringComparer.OrdinalIgnoreCase);
 
 
         this.AddPath(
@@ -119,10 +122,43 @@ public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
 
 
         nodes[current] =
-            collection with
+            navigation with
             {
                 Children =
                     children.Values.ToList()
             };
+    }
+    private static string GetNodeName(ProjectionNode node)
+    {
+        return node switch
+        {
+            ProjectionPropertyNode property =>
+                GetLastSegment(
+                    property.Member.SourceName),
+
+            ProjectionNavigationNode navigation =>
+                GetLastSegment(
+                    navigation.Member.SourceName),
+
+            _ =>
+                throw new NotSupportedException(
+                    $"Projection node type '{node.GetType().Name}' is not supported.")
+        };
+    }
+    private static string GetLastSegment(string path)
+    {
+        var index =
+            path.LastIndexOf('.');
+
+        return index < 0
+            ? path
+            : path[(index + 1)..];
+    }
+
+    private sealed class BuiltProjection<TProjection> : Projection<TEntity, TProjection>
+    {
+        public BuiltProjection(
+            ProjectionDefinition<TEntity, TProjection> definition)
+            : base(definition) { }
     }
 }

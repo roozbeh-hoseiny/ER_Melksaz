@@ -2,7 +2,7 @@
 using DQ.Abstraction.Specifications.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DQ.EntityFrameworkCore.Evaluators;
+namespace DQ.EntityFrameworkCore.Specifications;
 
 public sealed class IncludeEvaluator : ISpecificationPartEvaluator
 {

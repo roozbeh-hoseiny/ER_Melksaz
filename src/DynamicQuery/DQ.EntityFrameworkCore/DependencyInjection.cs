@@ -1,5 +1,5 @@
-﻿using DQ.EntityFrameworkCore.Evaluators;
-using DQ.EntityFrameworkCore.Projections;
+﻿using DQ.EntityFrameworkCore.Projections;
+using DQ.EntityFrameworkCore.Specifications;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DQ.EntityFrameworkCore;

@@ -1,5 +1,5 @@
-﻿using DQ.Abstraction.Specifications;
-using DQ.Core.Projections;
+﻿using DQ.Abstraction.Projections;
+using DQ.Abstraction.Specifications;
 
 namespace DQ.Core.Queries;
 
@@ -10,5 +10,5 @@ public interface IQueryDefinition<TEntity>
 
 public interface IQueryDefinition<TEntity, TProjection> : IQueryDefinition<TEntity>
 {
-    ProjectionDefinition<TEntity, TProjection>? Projection { get; }
+    IProjection<TEntity, TProjection>? Projection { get; }
 }

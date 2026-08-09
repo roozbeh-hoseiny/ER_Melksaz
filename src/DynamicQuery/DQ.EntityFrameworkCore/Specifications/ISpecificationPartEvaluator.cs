@@ -1,6 +1,6 @@
 ﻿using DQ.Abstraction.Specifications;
 
-namespace DQ.EntityFrameworkCore.Evaluators;
+namespace DQ.EntityFrameworkCore.Specifications;
 
 /// <summary>
 /// Represents a single specification evaluator.

@@ -1,7 +1,7 @@
 ﻿using DQ.Abstraction.Specifications;
 using Microsoft.EntityFrameworkCore;
 
-namespace DQ.EntityFrameworkCore.Evaluators;
+namespace DQ.EntityFrameworkCore.Specifications;
 
 public sealed class AsNoTrackingWithIdentityResolutionEvaluator : ISpecificationPartEvaluator
 {

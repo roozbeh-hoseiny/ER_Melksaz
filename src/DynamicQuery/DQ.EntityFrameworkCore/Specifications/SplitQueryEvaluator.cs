@@ -1,20 +1,17 @@
 ﻿using DQ.Abstraction.Specifications;
 using Microsoft.EntityFrameworkCore;
 
-namespace DQ.EntityFrameworkCore.Evaluators;
+namespace DQ.EntityFrameworkCore.Specifications;
 
-public sealed class AsNoTrackingEvaluator : ISpecificationPartEvaluator
+public sealed class SplitQueryEvaluator : ISpecificationPartEvaluator
 {
     public IQueryable<TEntity> Apply<TEntity>(
         IQueryable<TEntity> query,
         ISpecification<TEntity> specification)
         where TEntity : class
     {
-        if (specification.AsNoTracking)
-        {
-            return query.AsNoTracking();
-        }
-
-        return query;
+        return specification.AsSplitQuery
+            ? query.AsSplitQuery()
+            : query;
     }
 }

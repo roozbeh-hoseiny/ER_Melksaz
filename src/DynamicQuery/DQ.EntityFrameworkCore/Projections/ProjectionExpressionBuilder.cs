@@ -1,4 +1,5 @@
-﻿using DQ.Core.Projections;
+﻿using DQ.Abstraction.Projections.Models;
+using DQ.Core.Projections;
 using System.Linq.Expressions;
 
 namespace DQ.EntityFrameworkCore.Projections;
@@ -47,9 +48,7 @@ public sealed class ProjectionExpressionBuilder
 {
     private readonly ProjectionMetadataResolver _metadataResolver;
 
-
-    public ProjectionExpressionBuilder(
-        ProjectionMetadataResolver metadataResolver)
+    public ProjectionExpressionBuilder(ProjectionMetadataResolver metadataResolver)
     {
         ArgumentNullException.ThrowIfNull(metadataResolver);
 
@@ -66,7 +65,6 @@ public sealed class ProjectionExpressionBuilder
             Expression.Parameter(
                 typeof(TEntity),
                 "entity");
-
 
         var body =
             this.BuildObject(

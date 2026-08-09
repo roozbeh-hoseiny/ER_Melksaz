@@ -1,8 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using DQ.Core.Projections;
 
 namespace DQ.Abstraction.Projections;
 
 public interface IProjection<TEntity, TResult>
 {
-    Expression<Func<TEntity, TResult>> Expression { get; }
+    ProjectionDefinition<TEntity, TResult> Definition { get; }
 }

@@ -1,7 +1,7 @@
 ﻿using DQ.Abstraction.Specifications;
 using DQ.Core.Specifications;
 
-namespace DQ.EntityFrameworkCore.Evaluators;
+namespace DQ.EntityFrameworkCore.Specifications;
 
 public sealed class CriteriaEvaluator : ISpecificationPartEvaluator
 {
