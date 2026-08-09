@@ -35,6 +35,7 @@
   <Folder Name="/src/DynamicQuery/">
     <Project Path="DQ.Core/DQ.Core.csproj" Id="48cb3d6c-dd16-44e9-8900-9d2b6445120b" />
     <Project Path="DynamicQuery/DQ.Abstraction/DQ.Abstraction.csproj" Id="6dbadd29-7d99-4b84-bbaa-51802aa980e1" />
+    <Project Path="DynamicQuery/DQ.ConsoleApp/DQ.ConsoleApp.csproj" Id="4f511841-4b13-4ab8-87ed-c58a4ff52c09" />
     <Project Path="DynamicQuery/DQ.EntityFrameworkCore/DQ.EntityFrameworkCore.csproj" Id="5ecccc4b-cb34-4a8d-8b72-95df6c9cb2c3" />
   </Folder>
   <Folder Name="/src/Modules/" />

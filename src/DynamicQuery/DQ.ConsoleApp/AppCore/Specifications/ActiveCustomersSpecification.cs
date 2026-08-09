@@ -1,0 +1,15 @@
+﻿using DQ.Abstraction.Specifications;
+using DQ.ConsoleApp.AppCore.Entities;
+using DQ.Core.Specifications;
+
+namespace DQ.ConsoleApp.AppCore.Specifications;
+
+public sealed class ActiveCustomersSpecification
+{
+    public ISpecification<Customer> Build()
+    {
+        return new SpecificationBuilder<Customer>()
+            .Where(x => x.IsActive)
+            .Build();
+    }
+}
