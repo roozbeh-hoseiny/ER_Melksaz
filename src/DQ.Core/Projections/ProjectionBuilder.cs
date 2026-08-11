@@ -7,8 +7,7 @@ public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
 {
     private readonly List<ProjectionMember> _members = [];
 
-    public IProjectionBuilder<TEntity> Include(
-        string propertyName)
+    public IProjectionBuilder<TEntity> Include(string propertyName)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(propertyName);
 
@@ -40,6 +39,13 @@ public sealed class ProjectionBuilder<TEntity> : IProjectionBuilder<TEntity>
 
         return new BuiltProjection<TProjection>(
             definition);
+    }
+
+    public IProjectionBuilder<TEntity> Include(params IEnumerable<ProjectionMember> members)
+    {
+        foreach (var member in members)
+            this._members.Add(member);
+        return this;
     }
 
     private sealed class BuiltProjection<TProjection>

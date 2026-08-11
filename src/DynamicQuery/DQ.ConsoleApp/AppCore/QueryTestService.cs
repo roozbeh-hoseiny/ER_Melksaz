@@ -1,4 +1,5 @@
-﻿using DQ.Abstraction.Specifications;
+﻿using DQ.Abstraction.Projections.Models;
+using DQ.Abstraction.Specifications;
 using DQ.ConsoleApp.AppCore.DTOs;
 using DQ.ConsoleApp.AppCore.Entities;
 using DQ.ConsoleApp.AppCore.Persistence;
@@ -28,33 +29,34 @@ public sealed class QueryTestService
     public async Task RunAsync(
         CancellationToken cancellationToken = default)
     {
-        await this.TestWhereAsync(cancellationToken);
+        await this.TestSpecificationAndProjectionAsync(cancellationToken);
+        await this.TestReusableSpecificationAndReusahbleProjectionAsync(cancellationToken);
 
-        await this.TestAndAsync(cancellationToken);
+        //await this.TestWhereAsync(cancellationToken);
 
-        await this.TestOrAsync(cancellationToken);
+        //await this.TestAndAsync(cancellationToken);
 
-        await this.TestIncludeAsync(cancellationToken);
+        //await this.TestOrAsync(cancellationToken);
 
-        await this.TestStringIncludeAsync(cancellationToken);
+        //await this.TestIncludeAsync(cancellationToken);
 
-        await this.TestOrderByAsync(cancellationToken);
+        //await this.TestStringIncludeAsync(cancellationToken);
 
-        await this.TestPagingAsync(cancellationToken);
+        //await this.TestOrderByAsync(cancellationToken);
 
-        await this.TestAsNoTrackingAsync(cancellationToken);
+        //await this.TestPagingAsync(cancellationToken);
 
-        await this.TestAsNoTrackingWithIdentityResolutionAsync(
-            cancellationToken);
+        //await this.TestAsNoTrackingAsync(cancellationToken);
 
-        await this.TestAsTrackingAsync(cancellationToken);
+        //await this.TestAsNoTrackingWithIdentityResolutionAsync(cancellationToken);
 
-        await this.TestAsSplitQueryAsync(cancellationToken);
+        //await this.TestAsTrackingAsync(cancellationToken);
 
-        await this.TestProjectionAsync(cancellationToken);
+        //await this.TestAsSplitQueryAsync(cancellationToken);
 
-        await this.TestSpecificationAndProjectionAsync(
-            cancellationToken);
+        //await this.TestProjectionAsync(cancellationToken);
+
+        //await this.TestSpecificationAndProjectionAsync(cancellationToken);
     }
 
     private async Task TestWhereAsync(CancellationToken cancellationToken)
@@ -393,20 +395,18 @@ public sealed class QueryTestService
         Console.WriteLine(
             $"Projection: {customers.Count}");
 
-        foreach (var customer in customers)
-        {
-            Console.WriteLine(
-                $"  {customer.Id} - " +
-                $"{customer.Name} - " +
-                $"{customer.IsActive}");
-        }
+        //foreach (var customer in customers)
+        //{
+        //    Console.WriteLine(
+        //        $"  {customer.Id} - " +
+        //        $"{customer.Name} - " +
+        //        $"{customer.IsActive}");
+        //}
     }
 
-    private async Task TestSpecificationAndProjectionAsync(
-        CancellationToken cancellationToken)
+    private async Task TestSpecificationAndProjectionAsync(CancellationToken cancellationToken)
     {
-        var queryBuilder =
-            QueryFactory.For<Customer>();
+        var queryBuilder = QueryFactory.For<Customer>();
 
         queryBuilder.Specification
             .Where(x => x.IsActive)
@@ -419,12 +419,37 @@ public sealed class QueryTestService
             .Include(nameof(Customer.Name))
             .Include(nameof(Customer.IsActive));
 
-        var definition =
-            queryBuilder
-                .Build<CustomerListDto>();
+        var definition = queryBuilder.Build<CustomerListDto>();
 
-        var query =
-            this._queryExecutor.Execute(
+        var query = this._queryExecutor.Execute(
+                this._dbContext.Customers,
+                definition);
+
+        var customers = await query.ToListAsync(cancellationToken);
+
+        Console.WriteLine(
+            $"Specification + Projection: " +
+            $"{customers.Count}");
+
+        //foreach (var customer in customers)
+        //{
+        //    Console.WriteLine(
+        //        $"  {customer.Id} - {customer.Name}");
+        //}
+    }
+    private async Task TestReusableSpecificationAndReusahbleProjectionAsync(CancellationToken cancellationToken)
+    {
+        var queryBuilder = QueryFactory.For<Customer>();
+
+        var definition = queryBuilder
+            .WithSpecification(new ActiveCustomersSpecification())
+            //.WithProjection(new CustomerListDtoProjection(["Id", "Name", "Orders.Id", "Orders.CreatedAt"]))
+            //.WithProjection(new CustomerListDtoProjection(["Name", "Orders.Amount"]))
+            .WithProjection(new CustomerListDtoProjection())
+            //.Build<CustomerListDto>()
+            .Build<CustomerListDto>();
+
+        var query = this._queryExecutor.Execute(
                 this._dbContext.Customers,
                 definition);
 
@@ -433,13 +458,13 @@ public sealed class QueryTestService
                 cancellationToken);
 
         Console.WriteLine(
-            $"Specification + Projection: " +
+            $"Reusable Specification + Reuable Projection: " +
             $"{customers.Count}");
 
         foreach (var customer in customers)
         {
             Console.WriteLine(
-                $"  {customer.Id} - {customer.Name}");
+                $"  {customer.Name}");
         }
     }
 }
@@ -450,7 +475,8 @@ public sealed class ActiveCustomersSpecification : Specification<Customer>
     {
         builder
             .Where(x => x.IsActive)
-            .OrderBy(x => x.Name);
+            .Include(x => x.Orders)
+            .OrderByDescending(x => x.Name);
     })
     { }
 
@@ -475,11 +501,23 @@ public sealed class ActiveCustomersSpecification : Specification<Customer>
 }
 public sealed class CustomerListDtoProjection : Projection<Customer, CustomerListDto>
 {
+    //public CustomerListDtoProjection() : base(builder =>
+    //    builder
+    //    .Include(nameof(CustomerListDto.Id))
+    //    .Include(nameof(CustomerListDto.IsActive))
+    //    .Include(nameof(CustomerListDto.Name)))
+    //{
+    //}
     public CustomerListDtoProjection() : base(builder =>
-        builder
-        .Include(nameof(CustomerListDto.Id))
-        .Include(nameof(CustomerListDto.IsActive))
-        .Include(nameof(CustomerListDto.Name)))
     {
-    }
+        builder.Include(nameof(CustomerDetailsDto.Name));
+        builder.Include(nameof(CustomerDetailsDto.IsActive));
+    })
+    { }
+    public CustomerListDtoProjection(string[] fields) : base(builder => builder.Include(fields.Select(f => new ProjectionMember(f, f)))) { }
+}
+public sealed class CustomerListOnlyNameWithOrdersDtoProjection : Projection<Customer, CustomerListOnlyNameWithOrdersDto>
+{
+    public CustomerListOnlyNameWithOrdersDtoProjection() : base() { }
+
 }

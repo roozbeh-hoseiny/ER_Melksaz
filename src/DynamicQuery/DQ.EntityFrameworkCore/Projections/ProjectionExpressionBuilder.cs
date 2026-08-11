@@ -46,8 +46,7 @@ namespace DQ.EntityFrameworkCore.Projections;
  */
 public sealed class ProjectionExpressionBuilder<TEntity, TResult>
 {
-    public Expression<Func<TEntity, TResult>> Build(
-        IReadOnlyList<ProjectionMember> members)
+    public Expression<Func<TEntity, TResult>> Build(IReadOnlyList<ProjectionMember> members)
     {
         ArgumentNullException.ThrowIfNull(members);
 
@@ -61,8 +60,7 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
                 parameter,
                 typeof(TEntity),
                 typeof(TResult),
-                members,
-                string.Empty);
+                members);
 
         return Expression.Lambda<Func<TEntity, TResult>>(
             body,
@@ -70,17 +68,17 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
     }
 
     private Expression BuildObject(
-        Expression source,
-        Type sourceType,
-        Type targetType,
-        IReadOnlyList<ProjectionMember> members,
-        string path)
+    Expression source,
+    Type sourceType,
+    Type targetType,
+    IReadOnlyList<ProjectionMember> members)
     {
-        var bindings =
-            new List<MemberBinding>();
+        var bindings = new List<MemberBinding>();
 
-        foreach (var targetProperty in
-                 targetType.GetProperties(
+        var isAutoProjection =
+            members.Count == 0;
+
+        foreach (var targetProperty in targetType.GetProperties(
                      BindingFlags.Instance |
                      BindingFlags.Public))
         {
@@ -89,31 +87,22 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
                 continue;
             }
 
-            var explicitMember =
-                this.FindExplicitMember(
-                    members,
-                    path,
-                    targetProperty.Name);
-
             Expression? value;
 
-            if (explicitMember is not null)
+            if (isAutoProjection)
             {
-                value =
-                    this.BuildExplicitValue(
-                        source,
-                        explicitMember,
-                        targetProperty,
-                        members);
+                value = this.BuildConventionValue(
+                    source,
+                    targetProperty,
+                    members);
             }
             else
             {
-                value =
-                    this.BuildConventionValue(
-                        source,
-                        targetProperty,
-                        members,
-                        path);
+                value = this.BuildExplicitValue(
+                    source,
+                    sourceType,
+                    targetProperty,
+                    members);
             }
 
             if (value is null)
@@ -132,11 +121,104 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
             bindings);
     }
 
+    private Expression? BuildExplicitValue(
+    Expression source,
+    Type sourceType,
+    PropertyInfo targetProperty,
+    IReadOnlyList<ProjectionMember> members)
+    {
+        var propertyName =
+            targetProperty.Name;
+
+        // Direct:
+        //
+        // CreatedAt
+        //
+        var directMember =
+            members.FirstOrDefault(x =>
+                string.Equals(
+                    x.TargetName,
+                    propertyName,
+                    StringComparison.OrdinalIgnoreCase));
+
+        if (directMember is not null)
+        {
+            var sourceExpression =
+                this.ResolvePath(
+                    source,
+                    directMember.SourceName);
+
+            if (sourceExpression is null)
+            {
+                throw new InvalidOperationException(
+                    $"Source property '{directMember.SourceName}' " +
+                    $"could not be resolved from '{sourceType.Name}'.");
+            }
+
+            return this.BuildValue(
+                sourceExpression,
+                sourceExpression.Type,
+                targetProperty.PropertyType,
+                members);
+        }
+
+        // Nested:
+        //
+        // Orders.CreatedAt
+        //
+        var prefix =
+            propertyName + ".";
+
+        var nestedMembers =
+            members
+                .Where(x =>
+                    x.TargetName.StartsWith(
+                        prefix,
+                        StringComparison.OrdinalIgnoreCase))
+                .Select(x =>
+                    new ProjectionMember(
+                        RemovePrefix(
+                            x.SourceName,
+                            prefix),
+                        RemovePrefix(
+                            x.TargetName,
+                            prefix)))
+                .ToList();
+
+        if (nestedMembers.Count == 0)
+        {
+            return null;
+        }
+
+        var sourceProperty =
+            sourceType.GetProperty(
+                propertyName,
+                BindingFlags.Instance |
+                BindingFlags.Public |
+                BindingFlags.IgnoreCase);
+
+        if (sourceProperty is null)
+        {
+            throw new InvalidOperationException(
+                $"Source property '{propertyName}' " +
+                $"could not be resolved from '{sourceType.Name}'.");
+        }
+
+        var sourceExpressionForNested =
+            Expression.Property(
+                source,
+                sourceProperty);
+
+        return this.BuildNestedValue(
+            sourceExpressionForNested,
+            targetProperty.PropertyType,
+            nestedMembers);
+    }
+
     private Expression? BuildConventionValue(
-        Expression source,
-        PropertyInfo targetProperty,
-        IReadOnlyList<ProjectionMember> members,
-        string path)
+    Expression source,
+    PropertyInfo targetProperty,
+    IReadOnlyList<ProjectionMember> members)
     {
         var sourceProperty =
             source.Type.GetProperty(
@@ -159,44 +241,40 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
             sourceValue,
             sourceProperty.PropertyType,
             targetProperty.PropertyType,
-            members,
-            this.CombinePath(
-                path,
-                sourceProperty.Name));
+            members);
     }
 
-    private Expression? BuildExplicitValue(
-        Expression source,
-        ProjectionMember member,
-        PropertyInfo targetProperty,
-        IReadOnlyList<ProjectionMember> members)
+    private Expression BuildNestedValue(
+    Expression source,
+    Type targetType,
+    IReadOnlyList<ProjectionMember> members)
     {
-        var sourceValue =
-            this.ResolvePath(
-                source,
-                member.SourceName);
-
-        if (sourceValue is null)
+        if (this.IsCollection(
+                source.Type,
+                targetType,
+                out var sourceElementType,
+                out var targetElementType))
         {
-            throw new InvalidOperationException(
-                $"Projection source '{member.SourceName}' " +
-                $"could not be resolved from '{source.Type.Name}'.");
+            return this.BuildCollection(
+                source,
+                sourceElementType,
+                targetElementType,
+                targetType,
+                members);
         }
 
-        return this.BuildValue(
-            sourceValue,
-            sourceValue.Type,
-            targetProperty.PropertyType,
-            members,
-            member.SourceName);
+        return this.BuildObject(
+            source,
+            source.Type,
+            targetType,
+            members);
     }
 
     private Expression? BuildValue(
-        Expression source,
-        Type sourceType,
-        Type targetType,
-        IReadOnlyList<ProjectionMember> members,
-        string path)
+    Expression source,
+    Type sourceType,
+    Type targetType,
+    IReadOnlyList<ProjectionMember> members)
     {
         if (this.CanAssign(
                 sourceType,
@@ -218,11 +296,11 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
                 sourceElementType,
                 targetElementType,
                 targetType,
-                members,
-                path);
+                members);
         }
 
-        if (this.CanBuildComplexType(
+        if (members.Count > 0 &&
+            this.CanBuildComplexType(
                 sourceType,
                 targetType))
         {
@@ -230,20 +308,18 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
                 source,
                 sourceType,
                 targetType,
-                members,
-                path);
+                members);
         }
 
         return null;
     }
 
     private Expression BuildCollection(
-        Expression source,
-        Type sourceElementType,
-        Type targetElementType,
-        Type targetCollectionType,
-        IReadOnlyList<ProjectionMember> members,
-        string path)
+    Expression source,
+    Type sourceElementType,
+    Type targetElementType,
+    Type targetCollectionType,
+    IReadOnlyList<ProjectionMember> members)
     {
         var parameter =
             Expression.Parameter(
@@ -255,8 +331,7 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
                 parameter,
                 sourceElementType,
                 targetElementType,
-                members,
-                path);
+                members);
 
         var selector =
             Expression.Lambda(
@@ -269,7 +344,7 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
                 nameof(Enumerable.Select),
                 [
                     sourceElementType,
-                    targetElementType
+                targetElementType
                 ],
                 source,
                 selector);
@@ -290,10 +365,26 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
             select);
     }
 
+    private static string RemovePrefix(
+    string value,
+    string prefix)
+    {
+        return value.StartsWith(
+            prefix,
+            StringComparison.OrdinalIgnoreCase)
+            ? value[prefix.Length..]
+            : value;
+    }
+
     private Expression? ResolvePath(
         Expression source,
         string path)
     {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return source;
+        }
+
         var current =
             source;
 
@@ -322,32 +413,6 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
         return current;
     }
 
-    private ProjectionMember? FindExplicitMember(
-        IReadOnlyList<ProjectionMember> members,
-        string currentPath,
-        string targetProperty)
-    {
-        var targetPath =
-            this.CombinePath(
-                currentPath,
-                targetProperty);
-
-        return members.FirstOrDefault(
-            x =>
-                string.Equals(
-                    x.TargetName,
-                    targetPath,
-                    StringComparison.OrdinalIgnoreCase)
-                ||
-                (
-                    string.IsNullOrEmpty(currentPath) &&
-                    string.Equals(
-                        x.TargetName,
-                        targetProperty,
-                        StringComparison.OrdinalIgnoreCase)
-                ));
-    }
-
     private bool IsCollection(
         Type sourceType,
         Type targetType,
@@ -363,14 +428,22 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
             return false;
         }
 
-        sourceElementType =
-            GetElementType(sourceType)!;
+        var sourceElement =
+            GetElementType(sourceType);
 
-        targetElementType =
-            GetElementType(targetType)!;
+        var targetElement =
+            GetElementType(targetType);
 
-        return sourceElementType is not null &&
-               targetElementType is not null;
+        if (sourceElement is null ||
+            targetElement is null)
+        {
+            return false;
+        }
+
+        sourceElementType = sourceElement;
+        targetElementType = targetElement;
+
+        return true;
     }
 
     private static Type? GetElementType(Type type)
@@ -469,12 +542,4 @@ public sealed class ProjectionExpressionBuilder<TEntity, TResult>
             targetType);
     }
 
-    private string CombinePath(
-        string parent,
-        string child)
-    {
-        return string.IsNullOrEmpty(parent)
-            ? child
-            : $"{parent}.{child}";
-    }
 }
