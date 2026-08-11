@@ -18,8 +18,9 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddDynamicQueryEntityFrameworkCore();
 builder.Services.AddScoped<DbInitializer>();
 builder.Services.AddScoped<QueryTestService>();
+builder.Services.AddHostedService<Worker>();
 
-//builder.Services.AddHostedService<Worker>();
+var d = new ActiveCustomersSpecification();
 
 var host = builder.Build();
 

@@ -15,5 +15,15 @@ public abstract class Projection<TEntity, TResult> : IProjection<TEntity, TResul
 
         this.Definition = definition;
     }
+    protected Projection(Action<IProjectionBuilder<TEntity>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
 
+        var builder = new ProjectionBuilder<TEntity>();
+
+        configure(builder);
+
+        this.Definition = ((Projection<TEntity, TResult>)builder.Build<TResult>()).Definition;
+    }
+    protected Projection() : this(builder => { }) { }
 }

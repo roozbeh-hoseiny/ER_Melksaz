@@ -21,8 +21,10 @@ public sealed class Worker : BackgroundService
 
         var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var testService = scope.ServiceProvider.GetRequiredService<QueryTestService>();
 
         await initializer.InitializeAsync(stoppingToken);
+        await testService.RunAsync();
 
     }
 }

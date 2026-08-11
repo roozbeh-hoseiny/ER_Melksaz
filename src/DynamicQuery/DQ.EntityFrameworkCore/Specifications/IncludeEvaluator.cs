@@ -1,11 +1,25 @@
 ﻿using DQ.Abstraction.Specifications;
 using DQ.Abstraction.Specifications.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DQ.EntityFrameworkCore.Specifications;
 
 public sealed class IncludeEvaluator : ISpecificationPartEvaluator
 {
+    private static readonly MethodInfo IncludeMethod =
+    typeof(EntityFrameworkQueryableExtensions)
+        .GetMethods()
+        .Single(x =>
+            x.Name == nameof(EntityFrameworkQueryableExtensions.Include) &&
+            x.IsGenericMethodDefinition &&
+            x.GetGenericArguments().Length == 2 &&
+            x.GetParameters().Length == 2 &&
+            x.GetParameters()[1].ParameterType.IsGenericType &&
+            x.GetParameters()[1].ParameterType.GetGenericTypeDefinition()
+                == typeof(Expression<>));
+
     public IQueryable<TEntity> Apply<TEntity>(
         IQueryable<TEntity> query,
         ISpecification<TEntity> specification)
@@ -75,20 +89,28 @@ public sealed class IncludeEvaluator : ISpecificationPartEvaluator
 
         var expression = expressionProperty!.GetValue(include);
 
-
-        var includeMethod =
+        var includeMethod2 =
             typeof(EntityFrameworkQueryableExtensions)
                 .GetMethods()
-                .Single(x =>
+                .Where(x =>
                     x.Name == nameof(EntityFrameworkQueryableExtensions.Include)
-                    && x.GetParameters().Length == 2);
+                    && x.GetParameters().Length == 2)
+                .ToList();
+
+
+        //var includeMethod =
+        //    typeof(EntityFrameworkQueryableExtensions)
+        //        .GetMethods()
+        //        .Single(x =>
+        //            x.Name == nameof(EntityFrameworkQueryableExtensions.Include)
+        //            && x.GetParameters().Length == 2);
 
 
         var propertyType = type.GetGenericArguments()[1];
 
 
         var genericMethod =
-            includeMethod.MakeGenericMethod(
+            IncludeMethod.MakeGenericMethod(
                 typeof(TEntity),
                 propertyType);
 

@@ -1,6 +1,6 @@
 ﻿using DQ.Abstraction.Projections.Models;
-using DQ.Core.Projections;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DQ.EntityFrameworkCore.Projections;
 
@@ -44,22 +44,12 @@ namespace DQ.EntityFrameworkCore.Projections;
                 .ToList()
     }
  */
-public sealed class ProjectionExpressionBuilder
+public sealed class ProjectionExpressionBuilder<TEntity, TResult>
 {
-    private readonly ProjectionMetadataResolver _metadataResolver;
-
-    public ProjectionExpressionBuilder(ProjectionMetadataResolver metadataResolver)
+    public Expression<Func<TEntity, TResult>> Build(
+        IReadOnlyList<ProjectionMember> members)
     {
-        ArgumentNullException.ThrowIfNull(metadataResolver);
-
-        this._metadataResolver = metadataResolver;
-    }
-
-
-    public Expression<Func<TEntity, TProjection>> Build<TEntity, TProjection>(
-        ProjectionDefinition<TEntity, TProjection> definition)
-    {
-        ArgumentNullException.ThrowIfNull(definition);
+        ArgumentNullException.ThrowIfNull(members);
 
         var parameter =
             Expression.Parameter(
@@ -68,253 +58,423 @@ public sealed class ProjectionExpressionBuilder
 
         var body =
             this.BuildObject(
-                typeof(TProjection),
-                typeof(TEntity),
                 parameter,
-                definition.Root.Children);
+                typeof(TEntity),
+                typeof(TResult),
+                members,
+                string.Empty);
 
-
-        return Expression.Lambda<Func<TEntity, TProjection>>(
+        return Expression.Lambda<Func<TEntity, TResult>>(
             body,
             parameter);
     }
 
-
     private Expression BuildObject(
-        Type destinationType,
-        Type sourceType,
         Expression source,
-        IReadOnlyList<ProjectionNode> nodes)
+        Type sourceType,
+        Type targetType,
+        IReadOnlyList<ProjectionMember> members,
+        string path)
     {
         var bindings =
             new List<MemberBinding>();
 
-
-        foreach (var node in nodes)
+        foreach (var targetProperty in
+                 targetType.GetProperties(
+                     BindingFlags.Instance |
+                     BindingFlags.Public))
         {
-            switch (node)
+            if (!targetProperty.CanWrite)
             {
-                case ProjectionPropertyNode propertyNode:
-
-                    this.AddPropertyBinding(
-                        destinationType,
-                        source,
-                        propertyNode,
-                        bindings);
-
-                    break;
-
-
-                case ProjectionNavigationNode navigationNode:
-
-                    this.AddNavigationBinding(
-                        destinationType,
-                        sourceType,
-                        source,
-                        navigationNode,
-                        bindings);
-
-                    break;
-
-
-                default:
-
-                    throw new NotSupportedException(
-                        $"Projection node '{node.GetType().Name}' is not supported.");
+                continue;
             }
+
+            var explicitMember =
+                this.FindExplicitMember(
+                    members,
+                    path,
+                    targetProperty.Name);
+
+            Expression? value;
+
+            if (explicitMember is not null)
+            {
+                value =
+                    this.BuildExplicitValue(
+                        source,
+                        explicitMember,
+                        targetProperty,
+                        members);
+            }
+            else
+            {
+                value =
+                    this.BuildConventionValue(
+                        source,
+                        targetProperty,
+                        members,
+                        path);
+            }
+
+            if (value is null)
+            {
+                continue;
+            }
+
+            bindings.Add(
+                Expression.Bind(
+                    targetProperty,
+                    value));
         }
 
-
         return Expression.MemberInit(
-            Expression.New(destinationType),
+            Expression.New(targetType),
             bindings);
     }
 
-
-    private void AddPropertyBinding(
-        Type destinationType,
+    private Expression? BuildConventionValue(
         Expression source,
-        ProjectionPropertyNode node,
-        List<MemberBinding> bindings)
+        PropertyInfo targetProperty,
+        IReadOnlyList<ProjectionMember> members,
+        string path)
     {
-        var destinationProperty =
-            destinationType.GetProperty(
-                node.Member.TargetName);
-
-
-        if (destinationProperty is null)
-        {
-            return;
-        }
-
-
         var sourceProperty =
+            source.Type.GetProperty(
+                targetProperty.Name,
+                BindingFlags.Instance |
+                BindingFlags.Public |
+                BindingFlags.IgnoreCase);
+
+        if (sourceProperty is null)
+        {
+            return null;
+        }
+
+        var sourceValue =
             Expression.Property(
                 source,
-                node.Member.SourceName);
+                sourceProperty);
 
-
-        bindings.Add(
-            Expression.Bind(
-                destinationProperty,
-                sourceProperty));
+        return this.BuildValue(
+            sourceValue,
+            sourceProperty.PropertyType,
+            targetProperty.PropertyType,
+            members,
+            this.CombinePath(
+                path,
+                sourceProperty.Name));
     }
 
-
-    private void AddNavigationBinding(
-        Type destinationType,
-        Type sourceType,
+    private Expression? BuildExplicitValue(
         Expression source,
-        ProjectionNavigationNode node,
-        List<MemberBinding> bindings)
+        ProjectionMember member,
+        PropertyInfo targetProperty,
+        IReadOnlyList<ProjectionMember> members)
     {
-        var destinationProperty =
-            destinationType.GetProperty(
-                node.Member.TargetName);
-
-
-        if (destinationProperty is null)
-        {
-            return;
-        }
-
-
-        var metadata =
-            this._metadataResolver.ResolveNavigation(
-                sourceType,
-                node.Member.SourceName);
-
-
-        var navigationExpression =
-            Expression.Property(
+        var sourceValue =
+            this.ResolvePath(
                 source,
-                node.Member.SourceName);
+                member.SourceName);
 
-
-        Expression projection;
-
-
-        switch (metadata.Kind)
+        if (sourceValue is null)
         {
-            case ProjectionNavigationKind.Reference:
-
-                projection =
-                    this.BuildObject(
-                        destinationProperty.PropertyType,
-                        metadata.ClrType,
-                        navigationExpression,
-                        node.Children);
-
-                break;
-
-
-            case ProjectionNavigationKind.Collection:
-
-                projection =
-                    this.BuildCollection(
-                        destinationProperty.PropertyType,
-                        metadata.ClrType,
-                        navigationExpression,
-                        node.Children);
-
-                break;
-
-
-            default:
-
-                throw new NotSupportedException(
-                    $"Navigation kind '{metadata.Kind}' is not supported.");
+            throw new InvalidOperationException(
+                $"Projection source '{member.SourceName}' " +
+                $"could not be resolved from '{source.Type.Name}'.");
         }
 
-
-        bindings.Add(
-            Expression.Bind(
-                destinationProperty,
-                projection));
+        return this.BuildValue(
+            sourceValue,
+            sourceValue.Type,
+            targetProperty.PropertyType,
+            members,
+            member.SourceName);
     }
 
+    private Expression? BuildValue(
+        Expression source,
+        Type sourceType,
+        Type targetType,
+        IReadOnlyList<ProjectionMember> members,
+        string path)
+    {
+        if (this.CanAssign(
+                sourceType,
+                targetType))
+        {
+            return this.ConvertIfRequired(
+                source,
+                targetType);
+        }
+
+        if (this.IsCollection(
+                sourceType,
+                targetType,
+                out var sourceElementType,
+                out var targetElementType))
+        {
+            return this.BuildCollection(
+                source,
+                sourceElementType,
+                targetElementType,
+                targetType,
+                members,
+                path);
+        }
+
+        if (this.CanBuildComplexType(
+                sourceType,
+                targetType))
+        {
+            return this.BuildObject(
+                source,
+                sourceType,
+                targetType,
+                members,
+                path);
+        }
+
+        return null;
+    }
 
     private Expression BuildCollection(
-        Type destinationCollectionType,
-        Type sourceElementType,
         Expression source,
-        IReadOnlyList<ProjectionNode> children)
+        Type sourceElementType,
+        Type targetElementType,
+        Type targetCollectionType,
+        IReadOnlyList<ProjectionMember> members,
+        string path)
     {
-        var destinationElementType =
-            GetCollectionElementType(
-                destinationCollectionType);
-
-
         var parameter =
             Expression.Parameter(
                 sourceElementType,
                 "item");
 
-
         var body =
             this.BuildObject(
-                destinationElementType,
-                sourceElementType,
                 parameter,
-                children);
-
+                sourceElementType,
+                targetElementType,
+                members,
+                path);
 
         var selector =
             Expression.Lambda(
                 body,
                 parameter);
 
-
         var select =
             Expression.Call(
                 typeof(Enumerable),
                 nameof(Enumerable.Select),
-                new[]
-                {
+                [
                     sourceElementType,
-                    destinationElementType
-                },
+                    targetElementType
+                ],
                 source,
                 selector);
 
+        if (targetCollectionType.IsArray)
+        {
+            return Expression.Call(
+                typeof(Enumerable),
+                nameof(Enumerable.ToArray),
+                [targetElementType],
+                select);
+        }
 
         return Expression.Call(
             typeof(Enumerable),
             nameof(Enumerable.ToList),
-            new[]
-            {
-                destinationElementType
-            },
+            [targetElementType],
             select);
     }
 
-
-    private static Type GetCollectionElementType(
-        Type collectionType)
+    private Expression? ResolvePath(
+        Expression source,
+        string path)
     {
-        if (collectionType.IsArray)
+        var current =
+            source;
+
+        foreach (var segment in path.Split(
+                     '.',
+                     StringSplitOptions.RemoveEmptyEntries))
         {
-            return collectionType.GetElementType()!;
+            var property =
+                current.Type.GetProperty(
+                    segment,
+                    BindingFlags.Instance |
+                    BindingFlags.Public |
+                    BindingFlags.IgnoreCase);
+
+            if (property is null)
+            {
+                return null;
+            }
+
+            current =
+                Expression.Property(
+                    current,
+                    property);
         }
 
+        return current;
+    }
 
-        var enumerable =
-            collectionType
-                .GetInterfaces()
-                .FirstOrDefault(
-                    x =>
-                        x.IsGenericType &&
-                        x.GetGenericTypeDefinition() ==
-                        typeof(IEnumerable<>));
+    private ProjectionMember? FindExplicitMember(
+        IReadOnlyList<ProjectionMember> members,
+        string currentPath,
+        string targetProperty)
+    {
+        var targetPath =
+            this.CombinePath(
+                currentPath,
+                targetProperty);
 
+        return members.FirstOrDefault(
+            x =>
+                string.Equals(
+                    x.TargetName,
+                    targetPath,
+                    StringComparison.OrdinalIgnoreCase)
+                ||
+                (
+                    string.IsNullOrEmpty(currentPath) &&
+                    string.Equals(
+                        x.TargetName,
+                        targetProperty,
+                        StringComparison.OrdinalIgnoreCase)
+                ));
+    }
 
-        if (enumerable is null)
+    private bool IsCollection(
+        Type sourceType,
+        Type targetType,
+        out Type sourceElementType,
+        out Type targetElementType)
+    {
+        sourceElementType = null!;
+        targetElementType = null!;
+
+        if (sourceType == typeof(string) ||
+            targetType == typeof(string))
         {
-            throw new InvalidOperationException(
-                $"Type '{collectionType.Name}' is not a collection.");
+            return false;
         }
 
+        sourceElementType =
+            GetElementType(sourceType)!;
 
-        return enumerable.GetGenericArguments()[0];
+        targetElementType =
+            GetElementType(targetType)!;
+
+        return sourceElementType is not null &&
+               targetElementType is not null;
+    }
+
+    private static Type? GetElementType(Type type)
+    {
+        if (type.IsArray)
+        {
+            return type.GetElementType();
+        }
+
+        if (type.IsGenericType &&
+            type.GetGenericTypeDefinition() ==
+            typeof(IEnumerable<>))
+        {
+            return type.GetGenericArguments()[0];
+        }
+
+        return type.GetInterfaces()
+            .Where(x =>
+                x.IsGenericType &&
+                x.GetGenericTypeDefinition() ==
+                typeof(IEnumerable<>))
+            .Select(x =>
+                x.GetGenericArguments()[0])
+            .FirstOrDefault();
+    }
+
+    private bool CanBuildComplexType(
+        Type sourceType,
+        Type targetType)
+    {
+        if (sourceType == typeof(string) ||
+            targetType == typeof(string))
+        {
+            return false;
+        }
+
+        if (sourceType.IsValueType ||
+            targetType.IsValueType)
+        {
+            return false;
+        }
+
+        if (targetType.IsInterface ||
+            targetType.IsAbstract)
+        {
+            return false;
+        }
+
+        return targetType.GetConstructor(
+            Type.EmptyTypes) is not null;
+    }
+
+    private bool CanAssign(
+        Type sourceType,
+        Type targetType)
+    {
+        if (targetType.IsAssignableFrom(sourceType))
+        {
+            return true;
+        }
+
+        var targetUnderlying =
+            Nullable.GetUnderlyingType(
+                targetType);
+
+        if (targetUnderlying is not null)
+        {
+            return targetUnderlying.IsAssignableFrom(
+                sourceType);
+        }
+
+        var sourceUnderlying =
+            Nullable.GetUnderlyingType(
+                sourceType);
+
+        if (sourceUnderlying is not null)
+        {
+            return targetType.IsAssignableFrom(
+                sourceUnderlying);
+        }
+
+        return false;
+    }
+
+    private Expression ConvertIfRequired(
+        Expression expression,
+        Type targetType)
+    {
+        if (expression.Type == targetType)
+        {
+            return expression;
+        }
+
+        return Expression.Convert(
+            expression,
+            targetType);
+    }
+
+    private string CombinePath(
+        string parent,
+        string child)
+    {
+        return string.IsNullOrEmpty(parent)
+            ? child
+            : $"{parent}.{child}";
     }
 }

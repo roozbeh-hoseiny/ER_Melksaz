@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DQ.ConsoleApp.AppCore.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DQ.ConsoleApp.AppCore.Persistence;
 

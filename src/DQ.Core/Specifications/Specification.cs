@@ -15,14 +15,22 @@ public abstract class Specification<TEntity> : ISpecification<TEntity>
     public bool AsSplitQuery => this._state.AsSplitQuery;
     public int? Skip => this._state.Skip;
     public int? Take => this._state.Take;
-    public object? Projection => this._state.Projection;
 
 
-    public Specification(
-        SpecificationState<TEntity> state)
+    protected Specification(SpecificationState<TEntity> state)
     {
         ArgumentNullException.ThrowIfNull(state);
 
         this._state = state;
+    }
+    protected Specification(Action<ISpecificationBuilder<TEntity>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var builder = new SpecificationBuilder<TEntity>();
+
+        configure(builder);
+
+        this._state = ((Specification<TEntity>)builder.Build())._state;
     }
 }

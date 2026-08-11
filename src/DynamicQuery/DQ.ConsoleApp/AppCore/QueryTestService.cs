@@ -1,7 +1,10 @@
-﻿using DQ.ConsoleApp.AppCore.DTOs;
+﻿using DQ.Abstraction.Specifications;
+using DQ.ConsoleApp.AppCore.DTOs;
 using DQ.ConsoleApp.AppCore.Entities;
 using DQ.ConsoleApp.AppCore.Persistence;
+using DQ.Core.Projections;
 using DQ.Core.Queries;
+using DQ.Core.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace DQ.ConsoleApp.AppCore;
@@ -54,11 +57,9 @@ public sealed class QueryTestService
             cancellationToken);
     }
 
-    private async Task TestWhereAsync(
-        CancellationToken cancellationToken)
+    private async Task TestWhereAsync(CancellationToken cancellationToken)
     {
-        var queryBuilder =
-            QueryFactory.For<Customer>();
+        var queryBuilder = QueryFactory.For<Customer>();
 
         queryBuilder.Specification
             .Where(x => x.IsActive);
@@ -440,5 +441,45 @@ public sealed class QueryTestService
             Console.WriteLine(
                 $"  {customer.Id} - {customer.Name}");
         }
+    }
+}
+
+public sealed class ActiveCustomersSpecification : Specification<Customer>
+{
+    public ActiveCustomersSpecification() : base(builder =>
+    {
+        builder
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.Name);
+    })
+    { }
+
+    public ISpecification<Customer> Build(string? search = null)
+    {
+        var builder =
+            QueryFactory
+                .For<Customer>()
+                .Specification;
+
+        builder.Where(x => x.IsActive);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            builder.And(x => x.Name.Contains(search));
+        }
+
+        builder.OrderBy(x => x.Name);
+
+        return builder.Build();
+    }
+}
+public sealed class CustomerListDtoProjection : Projection<Customer, CustomerListDto>
+{
+    public CustomerListDtoProjection() : base(builder =>
+        builder
+        .Include(nameof(CustomerListDto.Id))
+        .Include(nameof(CustomerListDto.IsActive))
+        .Include(nameof(CustomerListDto.Name)))
+    {
     }
 }

@@ -2,17 +2,14 @@
 
 namespace DQ.Core.Projections;
 
-public sealed class ProjectionDefinition<TEntity, TProjection>
+public sealed class ProjectionDefinition<TEntity, TResult>
 {
-    public ProjectionRootNode Root
-    {
-        get;
-    }
+    public IReadOnlyList<ProjectionMember> Members { get; }
 
-    public ProjectionDefinition(ProjectionRootNode root)
+    public ProjectionDefinition(IReadOnlyList<ProjectionMember> members)
     {
-        ArgumentNullException.ThrowIfNull(root);
+        ArgumentNullException.ThrowIfNull(members);
 
-        this.Root = root;
+        this.Members = members;
     }
 }
